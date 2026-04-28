@@ -261,6 +261,42 @@ const Index = () => {
       {/* ─────────── CHECKLIST ─────────── */}
       <PreparationChecklist />
 
+      {/* ─────────── PRODUTO EDITORIAL ─────────── */}
+      <section className="bg-cream">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[500px] lg:min-h-[600px]">
+          <div className="relative min-h-[400px] sm:min-h-[480px] lg:min-h-0 overflow-hidden order-2 lg:order-1">
+            <video
+              src="/videos/barco-gratidao.mp4"
+              poster="/images/img-09.jpg"
+              autoPlay
+              loop
+              muted
+              playsInline
+              aria-label="Barco de pescador verde e amarelo chamado Gratidão ancorado na praia"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="max-w-2xl lg:mr-auto px-6 sm:px-10 lg:px-16 py-20 sm:py-28 lg:py-36 flex flex-col justify-center order-1 lg:order-2">
+            <span className="inline-block font-narrow font-medium text-azul text-xs sm:text-sm bg-[#FFF2C9] rounded-full px-5 py-2 w-fit">
+              04 · Produto
+            </span>
+            <h2 className="font-display uppercase text-verde mt-6 leading-[1.0] text-balance text-4xl sm:text-5xl lg:text-6xl">
+              um chinelo que você usa todos os dias.
+            </h2>
+            <p className="font-display uppercase text-verde-escuro mt-6 leading-[1.05] text-balance text-3xl sm:text-4xl lg:text-5xl">
+              um significado que você carrega pra vida.
+            </p>
+
+            <div className="mt-10 flex">
+              <CtaButton onClick={scrollToCta}>
+                Quero garantir meu par
+              </CtaButton>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─────────── COMEÇO DO DIA · MANIFESTO DIÁRIO ─────────── */}
       <EditorialBlock
         src="/images/Camiseta_Listrada.jpg"
@@ -306,42 +342,6 @@ const Index = () => {
           </CtaButton>
         </div>
       </EditorialBlock>
-
-      {/* ─────────── PRODUTO EDITORIAL ─────────── */}
-      <section className="bg-cream">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[500px] lg:min-h-[600px]">
-          <div className="relative min-h-[400px] sm:min-h-[480px] lg:min-h-0 overflow-hidden order-2 lg:order-1">
-            <video
-              src="/videos/barco-gratidao.mp4"
-              poster="/images/img-09.jpg"
-              autoPlay
-              loop
-              muted
-              playsInline
-              aria-label="Barco de pescador verde e amarelo chamado Gratidão ancorado na praia"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          </div>
-
-          <div className="max-w-2xl lg:mr-auto px-6 sm:px-10 lg:px-16 py-20 sm:py-28 lg:py-36 flex flex-col justify-center order-1 lg:order-2">
-            <span className="inline-block font-narrow font-medium text-azul text-xs sm:text-sm bg-[#FFF2C9] rounded-full px-5 py-2 w-fit">
-              04 · Produto
-            </span>
-            <h2 className="font-display uppercase text-verde mt-6 leading-[1.0] text-balance text-4xl sm:text-5xl lg:text-6xl">
-              um chinelo que você usa todos os dias.
-            </h2>
-            <p className="font-display uppercase text-verde-escuro mt-6 leading-[1.05] text-balance text-3xl sm:text-4xl lg:text-5xl">
-              um significado que você carrega pra vida.
-            </p>
-
-            <div className="mt-10 flex">
-              <CtaButton onClick={scrollToCta}>
-                Quero garantir meu par
-              </CtaButton>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ─────────── ESCASSEZ · AZUL ─────────── */}
       <section className="bg-azul px-6 sm:px-10 py-20 sm:py-28 lg:py-36 min-h-[500px] sm:min-h-[600px] flex items-center">
