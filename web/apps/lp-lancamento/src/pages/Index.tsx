@@ -40,9 +40,9 @@ const Index = () => {
     <div className="min-h-screen bg-cream text-foreground">
       {/* ─────────── TOP BAR ─────────── */}
       <div className="bg-verde text-amarelo">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-2 grid grid-cols-3 items-center">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-4 sm:py-5 grid grid-cols-3 items-center">
           <span className="justify-self-start font-narrow font-semibold text-xs">
-            Lançamento oficial · 1º.05
+            1º.05 · 9h
           </span>
           <span className="justify-self-center font-narrow font-semibold text-xs text-center">
             Pé Direito
