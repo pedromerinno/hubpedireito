@@ -106,7 +106,7 @@ export function ProductCarousel({ inline = false }: ProductCarouselProps) {
             className="absolute"
             style={{ willChange: "transform, opacity" }}
           >
-            <div className="w-[280px] sm:w-[360px] lg:w-[440px] aspect-square flex items-center justify-center">
+                <div className="w-[340px] sm:w-[380px] lg:w-[440px] aspect-square flex items-center justify-center">
               <img
                 src={product.image}
                 alt={`Chinelo Pé Direito ${product.name}`}
@@ -133,7 +133,7 @@ export function ProductCarousel({ inline = false }: ProductCarouselProps) {
   );
 
   if (inline) {
-    return <div className="mt-8 sm:mt-10 lg:mt-12">{content}</div>;
+    return <div className="mt-8 sm:mt-10 lg:mt-12 -mx-6 sm:-mx-10">{content}</div>;
   }
 
   return (

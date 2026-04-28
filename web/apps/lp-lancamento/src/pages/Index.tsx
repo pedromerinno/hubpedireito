@@ -161,8 +161,8 @@ const Index = () => {
             A Pé Direito nasceu pra representar o que acreditamos.
           </p>
 
-          <p className="font-display uppercase leading-[1.05] text-balance text-4xl sm:text-6xl md:text-7xl">
-            toda compra é um posicionamento.
+          <p className="font-display uppercase leading-[1.05] text-4xl sm:text-6xl md:text-7xl sm:text-balance">
+            toda compra é<br className="sm:hidden" /> um posicionamento.
           </p>
 
         </div>
