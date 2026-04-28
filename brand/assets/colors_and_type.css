@@ -1,0 +1,204 @@
+/* ============================================================
+   Pé Direito — Colors & Type tokens
+   Brazilian streetwear brand (chinelos / flip-flops)
+   Brand DNA: Brazilian flag flipped into identity — verde, amarelo, azul,
+   on cream paper. Loud, unapologetic, popular-speech voice.
+   ============================================================ */
+
+/* --------------------------------------------------------- Fonts */
+/* Coolvetica — headline + editorial display (no great Google-Fonts match;
+   closest free substitute is Bowlby One SC / Anton for mass, or Oswald.
+   We load Anton as the nearest condensed weighty sans. Flag to user. */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Bayon&family=Archivo+Black&family=Inter:wght@400;500;600;700;900&display=swap');
+
+/* --------------------------------------------------------- Colors */
+:root {
+  /* CORE FLAG TRIO — these three are THE brand */
+  --pd-verde:        rgb(43, 148, 2);    /* #2B9402  Brazil green, primary field */
+  --pd-amarelo:      rgb(254, 191, 0);   /* #FEBF00  high-vis yellow, accent / CTA */
+  --pd-azul:         rgb(0, 92, 225);    /* #005CE1  royal blue, contrast / link */
+
+  /* Flag support tones */
+  --pd-verde-escuro: rgb(27, 98, 0);     /* #1B6200  deep green — text on yellow */
+  --pd-verde-mid:    rgb(2, 160, 14);    /* #02A00E  web green variant */
+  --pd-verde-lima:   rgb(103, 168, 13);  /* #67A80D  lime accent */
+  --pd-amarelo-sat:  rgb(255, 206, 0);   /* #FFCE00  saturated */
+  --pd-amarelo-warm: rgb(255, 174, 0);   /* #FFAE00  amber */
+  --pd-azul-escuro:  rgb(0, 70, 185);    /* #0046B9  deep blue */
+  --pd-azul-electric:rgb(6, 0, 255);     /* #0600FF  glitch blue */
+
+  /* Paper / cream surfaces — used as background more than white */
+  --pd-cream-1:      rgb(246, 246, 229); /* #F6F6E5  primary paper */
+  --pd-cream-2:      rgb(249, 241, 209); /* #F9F1D1  warm cream */
+  --pd-cream-3:      rgb(246, 235, 203); /* #F6EBCB  sand */
+  --pd-cream-4:      rgb(240, 237, 228); /* #F0EDE4  grey cream */
+  --pd-cream-5:      rgb(255, 249, 232); /* #FFF9E8  palest */
+  --pd-cream-6:      rgb(255, 241, 200); /* #FFF1C8  butter */
+  --pd-cream-7:      rgb(254, 255, 250); /* #FEFFFA  near-white */
+
+  /* Neutrals */
+  --pd-black:        rgb(0, 0, 0);
+  --pd-white:        rgb(255, 255, 255);
+  --pd-ink:          rgb(10, 10, 10);    /* used on note backgrounds */
+  --pd-grey:         rgb(217, 217, 217);
+
+  /* Alert / warning (used in the "nota de repúdio" / fraud alerts) */
+  --pd-red:          rgb(255, 0, 0);
+  --pd-red-hot:      rgb(255, 5, 5);
+
+  /* -------- SEMANTIC -------- */
+  --bg:              var(--pd-cream-1);
+  --bg-alt:          var(--pd-cream-2);
+  --bg-inverse:      var(--pd-verde);
+  --bg-dark:         var(--pd-black);
+
+  --fg:              var(--pd-ink);
+  --fg-muted:        rgba(10,10,10,0.65);
+  --fg-inverse:      var(--pd-amarelo);    /* yellow on green is the signature */
+
+  --brand:           var(--pd-verde);
+  --accent:          var(--pd-amarelo);
+  --link:            var(--pd-azul);
+
+  --danger:          var(--pd-red);
+  --success:         var(--pd-verde);
+
+  /* Borders */
+  --border:          rgba(0,0,0,0.12);
+  --border-strong:   rgb(0,0,0);
+
+  /* Radii — product is cropped, graphic; radii are mostly 0, with
+     occasional 20/30/40 on photo cards in stories/notes */
+  --r-0:  0px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 30px;
+  --r-2x: 40px;
+
+  /* Elevation is rarely used — brand prefers hard edges & flat color.
+     Keep minimal. */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.08);
+  --shadow-2: 0 6px 16px rgba(0,0,0,0.12);
+  --shadow-stamp: 6px 6px 0 rgba(0,0,0,1);  /* hard offset stamp shadow */
+
+  /* Spacing (8pt-ish) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10:128px;
+
+  /* -------- TYPE TOKENS -------- */
+  /* Display headline — Coolvetica (sub: Anton). Compressed, rounded, bold.
+     Used at extreme sizes: 65–296px. Letter-spacing +0.020–0.060em. */
+  --font-display: "Anton", "Coolvetica", "Arial Narrow", Impact, sans-serif;
+
+  /* Poster slab — Tusker Grotesk (sub: Archivo Black / Oswald 700 heavy).
+     Ultra-condensed gigantic headlines used in campaign carousels. */
+  --font-poster:  "Archivo Black", "Tusker Grotesk", "Anton", Impact, sans-serif;
+
+  /* Chiseled serif-display — Bayon (Google Fonts). Always-uppercase,
+     flat-top condensed. Used as eyebrow / lead-in above poster type. */
+  --font-lead:    "Bayon", "Archivo Black", Impact, sans-serif;
+
+  /* Body — Inter. Kept simple, readable. */
+  --font-body:    "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+  /* Narrow data / labels — Arial Narrow (system) */
+  --font-narrow:  "Arial Narrow", "Inter", sans-serif;
+
+  /* ----- Type scale ----- */
+  --t-xs:    12px;
+  --t-sm:    14px;
+  --t-md:    16px;
+  --t-lg:    20px;
+  --t-xl:    24px;
+  --t-2xl:   32px;
+  --t-3xl:   48px;
+  --t-4xl:   72px;
+  --t-5xl:   120px;
+  --t-6xl:   200px;
+}
+
+/* --------------------------------------------------------- Semantic elements */
+html, body { background: var(--bg); color: var(--fg); font-family: var(--font-body); }
+
+.pd-eyebrow {
+  font-family: var(--font-lead);
+  font-size: var(--t-lg);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  color: var(--pd-azul);
+  text-transform: uppercase;
+}
+
+.pd-h1 {
+  font-family: var(--font-poster);
+  font-size: clamp(56px, 10vw, 200px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  font-weight: 900;
+}
+
+.pd-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 120px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+}
+
+.pd-h3 {
+  font-family: var(--font-lead);
+  font-size: clamp(32px, 4vw, 72px);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.pd-lead {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+}
+
+.pd-body {
+  font-family: var(--font-body);
+  font-size: var(--t-md);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+.pd-manifesto {
+  /* The signature body-copy style from the NOTA_ series */
+  font-family: var(--font-display);
+  font-size: 31px;
+  line-height: 1.12;
+  letter-spacing: 0.06em;
+  text-transform: none;
+}
+
+.pd-caption {
+  font-family: var(--font-narrow);
+  font-size: var(--t-sm);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.pd-link { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+.pd-link:hover { color: var(--pd-azul-escuro); }
+
+/* Signature combo: green bg + yellow foreground */
+.pd-slab-green  { background: var(--pd-verde); color: var(--pd-amarelo); }
+.pd-slab-yellow { background: var(--pd-amarelo); color: var(--pd-verde-escuro); }
+.pd-slab-blue   { background: var(--pd-azul); color: var(--pd-amarelo); }
+.pd-slab-cream  { background: var(--pd-cream-2); color: var(--pd-azul); }
+.pd-slab-black  { background: var(--pd-black); color: var(--pd-amarelo); }

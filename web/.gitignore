@@ -1,0 +1,38 @@
+# deps
+node_modules
+.pnp
+.pnp.js
+
+# build outputs
+dist
+dist-ssr
+build
+.turbo
+.vercel
+
+# env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# editors / os
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+.idea
+*.local
+
+# test coverage
+coverage
+
+# portal has its own repo
+apps/portal

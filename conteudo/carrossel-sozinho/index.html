@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Pé Direito — Carrossel Torres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bayon&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* ============================================================
+   Pé Direito — Carrossel Torres · 20 criativos
+   clean edition — campo de cor + tipo + diamante + cta
+   ============================================================ */
+
+:root{
+  /* Paleta travada — 4 cores. */
+  --verde:  #2B9402;
+  --amarelo:#FEBF00;
+  --azul:   #005CE1;
+  --cream:  #F9F1D1;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--cream);font-family:'Inter',system-ui,sans-serif;color:var(--verde);min-height:100vh}
+body{padding:56px 32px 120px}
+
+.wrap{max-width:640px;margin:0 auto}
+
+.hero{padding-bottom:28px;border-bottom:2px solid var(--amarelo);margin-bottom:32px}
+.hero h1{font-family:'Anton',sans-serif;font-size:52px;color:var(--verde);text-transform:lowercase;letter-spacing:.01em;font-weight:400;line-height:1}
+.hero .lbl{font-family:'Bayon',sans-serif;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--azul);margin-top:10px}
+
+/* Instagram device */
+.device{max-width:540px;margin:0 auto;background:#fff;border:1px solid #dbdbdb;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.post-head{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.post-avatar{width:34px;height:34px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid var(--amarelo)}
+.post-avatar svg{width:20px;height:12px;color:var(--verde)}
+.post-user{font-size:14px;font-weight:600;color:#262626;flex:1;display:flex;align-items:center;gap:6px}
+.verified{width:14px;height:14px;color:#0095F6}
+.post-more{color:#262626;font-size:20px;letter-spacing:1px;padding-bottom:6px}
+
+.carousel{aspect-ratio:4/5;position:relative;overflow:hidden;background:var(--cream)}
+.track{display:flex;height:100%;transition:transform .38s cubic-bezier(.2,.9,.2,1)}
+.slide-holder{flex:0 0 100%;height:100%;position:relative;overflow:hidden}
+.dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:10;max-width:90%;flex-wrap:wrap;justify-content:center}
+.dots span{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);transition:background .2s;cursor:pointer}
+.dots span.on{background:#fff}
+.nav-btn{position:absolute;top:50%;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.95);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transform:translateY(-50%);z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.nav-btn svg{width:16px;height:16px;color:#262626}
+.nav-btn.prev{left:10px}.nav-btn.next{right:10px}
+.nav-btn:disabled{opacity:0;pointer-events:none}
+.page-chip{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;font-weight:600;padding:4px 10px;border-radius:14px;z-index:10;letter-spacing:.04em}
+
+.post-actions{display:flex;gap:16px;padding:10px 16px 4px;align-items:center}
+.post-actions svg{width:26px;height:26px;color:#262626;stroke-width:1.6}
+.post-actions .right{margin-left:auto}
+.post-likes{padding:6px 16px 0;font-size:14px;font-weight:600;color:#262626}
+.post-caption{padding:6px 16px;font-size:14px;color:#262626;line-height:1.4}
+.post-caption b{font-weight:600;margin-right:6px}
+.post-time{padding:4px 16px 14px;font-size:11px;color:#8e8e8e;text-transform:uppercase;letter-spacing:.04em}
+
+/* ══════════ SLIDE BASE (1080×1350 → 540×675) ══════════ */
+.slide{
+  width:1080px;height:1350px;
+  position:absolute;inset:0;
+  transform-origin:0 0;
+  transform:scale(calc(540/1080));
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  font-family:'Anton',sans-serif;
+}
+
+/* Diamond icon — posição varia por slide pra criar ritmo.
+   6 possíveis: tl (default) · tc · tr · bl · bc · br.
+   Atribuição feita via JS no init (ver bloco de script). */
+.slide .mark{
+  position:absolute;
+  z-index:3;
+  line-height:0;
+  top:130px;left:130px;  /* default = top-left com mais respiro */
+}
+.slide .mark svg{width:82px;height:48px;display:block;color:inherit;opacity:.95}
+/* tc/bc usam pixel absoluto (slide=1080, mark=82, centro=(1080-82)/2=499)
+   pra evitar conflito entre transform:translateX(-50%) no mark e
+   transform:scale() no .slide pai. */
+.slide .mark.tc{left:499px;right:auto;transform:none}
+.slide .mark.tr{left:auto;right:130px}
+.slide .mark.bl{top:auto;bottom:130px}
+.slide .mark.bc{top:auto;bottom:130px;left:499px;right:auto;transform:none}
+.slide .mark.br{top:auto;bottom:130px;left:auto;right:130px}
+/* diag-anchor — alinha com a borda esquerda do texto do bloco 2 no tpl-diag.
+   X=522 = canvas-90(body-padding) + (900-468)(body-width - block-max-width). */
+.slide .mark.diag-anchor{top:auto;bottom:130px;left:522px;right:auto;transform:none}
+
+.slide .body{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  padding:260px 130px;
+  gap:22px;
+}
+
+.slide .body.center{align-items:center;text-align:center}
+
+/* Wordmark/CTA removidos do design — só o ícone diamante agora marca a assinatura.
+   DOM mantém o markup pra referência futura. */
+.slide .cta{display:none}
+
+/* ═════════ HIERARQUIA TIPOGRÁFICA ═════════
+   • setup   → Arial Narrow, sentence case, itálico  (voz editorial / manifesto)
+   • hero/equal/solo → Anton lowercase huge           (display / poster hit)
+   • cta     → Bayon UPPERCASE letter-spaced          (chrome / label)
+   • mark-num → Bayon UPPERCASE small                 (paginação opcional)
+
+   Caixa alta só aparece em chrome (Bayon). Display é sempre lowercase —
+   o brand só usa uppercase acentos dentro de poster lowercase em casos
+   específicos ("FALTAm", "FALSO"), não é a regra aqui.
+   ═══════════════════════════════════════════ */
+
+/* Display — default LOWERCASE (voz manifesto).
+   Slides marcados com `.body.up` viram UPPERCASE (momentos poster/hit).
+   O brand usa os dois — a mistura dá ritmo no carrossel.
+
+   ⚠️ SAFE MARGIN: max-width travado em 820px (= canvas 1080 - 130*2 de
+   padding lateral do body). Nenhum texto display pode estourar essa
+   largura. Se estourar, reduzir .s-* ou quebrar linha. overflow-wrap
+   :break-word é segurança final pra single-words muito largos. */
+.setup{
+  font-family:'Anton','Archivo Black',sans-serif;
+  text-transform:lowercase;
+  letter-spacing:-.005em;
+  line-height:1.0;
+  font-weight:400;
+  font-size:64px;
+  max-width:820px;
+}
+.hero-line{font-family:'Anton','Archivo Black',sans-serif;text-transform:lowercase;letter-spacing:-.02em;line-height:.96;font-weight:400;font-size:180px;max-width:820px}
+.equal{font-family:'Anton','Archivo Black',sans-serif;text-transform:lowercase;letter-spacing:-.018em;line-height:.98;font-weight:400;font-size:140px;max-width:820px}
+.solo{font-family:'Anton','Archivo Black',sans-serif;text-transform:lowercase;letter-spacing:-.02em;line-height:.96;font-weight:400;font-size:180px;max-width:820px}
+
+/* UPPERCASE override — aplicar .up no .body pra virar o slide todo em caixa alta */
+.body.up .setup,
+.body.up .hero-line,
+.body.up .equal,
+.body.up .solo{text-transform:uppercase;letter-spacing:-.02em}
+
+/* BODY COPY — Arial Narrow, voz de manifesto em sentence case.
+   Regra do brand: quando copy tem mais de 1 frase, sai do display
+   e entra em Arial Narrow.
+
+   ⚠️ REGRA FIRME: body-copy só aparece no INÍCIO ou no FIM do slide.
+   Nunca sanduichar Arial Narrow entre dois displays grandes.
+   Permitido: body → display · display → body · body → display → display
+   Proibido: display → body → display (quebra o ritmo do poster). */
+.body-copy{
+  font-family:'Arial Narrow','Inter',system-ui,sans-serif;
+  font-size:46px;
+  line-height:1.3;
+  letter-spacing:.005em;
+  text-transform:none;
+  font-weight:400;
+  max-width:94%;
+}
+.body-copy.sm{font-size:38px;line-height:1.32}
+.body-copy.lg{font-size:58px;line-height:1.22}
+
+/* BOX · destaque de palavra inline — nunca bloco
+   ⚠️ REGRAS FIRMES:
+   1. Aplicar só em 1-2 palavras. Nunca em frase/parágrafo inteiro.
+   2. Sempre como <span> inline dentro do texto maior. Nunca como <div> bloco.
+   3. Cor da caixa ≠ cor do bg do slide
+   4. Cor da caixa ≠ cor do texto principal do slide
+   5. Cor do texto dentro ≠ cor do bg do slide
+   Serve como highlight/marker sobre palavra-chave. */
+.box{
+  display:inline;
+  background:var(--cream);
+  color:var(--verde);
+  padding:.05em .25em;
+  box-decoration-break:clone;
+  -webkit-box-decoration-break:clone;
+}
+
+/* BLEED · palavra maximalista colada ao topo ou à base do slide
+   ⚠️ REGRA: texto maximalista (ultra-grande que enche o slide
+   horizontalmente) SÓ pode aparecer grudado no TOP ou no BOTTOM
+   do slide — nunca flutuando no meio. Padrão ref "ABANDONO":
+   palavra-âncora gigante encostada na borda inferior.
+
+   Uso:
+     <div class="bleed bottom">PALAVRA</div>   — cola no bottom
+     <div class="bleed top">PALAVRA</div>      — cola no top
+
+   Pode vazar levemente pra fora do canvas (negative margin) pra
+   reforçar o efeito "letra cortada pela borda". */
+.bleed{
+  position:absolute;
+  left:-6px;right:-6px;
+  font-family:'Anton','Archivo Black',sans-serif;
+  font-size:300px;
+  line-height:.85;
+  letter-spacing:-.02em;
+  text-align:center;
+  white-space:nowrap;
+  text-transform:lowercase;
+  z-index:2;
+}
+.bleed.top{top:0}
+.bleed.bottom{bottom:0}
+/* caixa mista é exceção — usado pra wordmark "PéDireito" */
+.bleed.mixed-case{text-transform:none}
+
+/* WEIGHT ACCENT — Archivo Black dentro de uma frase em Anton.
+   Ex: <b>ESTÁ</b> dentro de "o brasileiro não <b>ESTÁ</b> perdido."
+
+   ⚠️ REGRA FIRME DE ALTURA: Archivo Black tem cap-height menor que Anton.
+   Sem compensar, a palavra em <b> renderiza visivelmente menor, quebrando
+   a linha visual do poster. Compensação: font-size:1.12em pra equalizar
+   altura dos glyphs. Se ainda ficar menor, subir pra 1.15em.
+   A regra vale pra qualquer mix Anton + Archivo Black, inline ou em span. */
+.setup b, .hero-line b, .equal b, .solo b{
+  font-family:'Archivo Black',sans-serif;
+  font-weight:900;
+  letter-spacing:-.035em;
+  font-size:1.12em;
+}
+
+/* COLOR ACCENT — troca a cor de uma palavra dentro da frase.
+   Ex: "MAS ERA <span class='c-am'>SÓ</span>" (SÓ amarelo sobre azul). */
+.c-am{color:var(--amarelo)}
+.c-vd{color:var(--verde)}
+.c-az{color:var(--azul)}
+.c-cr{color:var(--cream)}
+
+/* FONT MIX — trocar família DENTRO de uma palavra pra criar textura.
+   Ex: "PRÓ" em Archivo Black + "pria" em Anton (ref histórica do brand).
+   Aplicar em <span> inline dentro do hero-line/equal/solo/setup.
+
+   ⚠️ REGRA DE ALTURA: quando mistura .f-heavy com .f-anton, o Archivo Black
+   renderiza com cap-height menor que Anton. Compensamos escalando .f-heavy
+   em 1.10em (e .f-bayon em 1.18em) pra alturas ficarem iguais. */
+.f-anton  {font-family:'Anton','Archivo Black',sans-serif;font-weight:400;letter-spacing:-.02em}
+.f-heavy  {font-family:'Archivo Black',sans-serif;font-weight:900;letter-spacing:-.035em;font-size:1.10em}
+.f-bayon  {font-family:'Bayon',sans-serif;letter-spacing:.02em;font-weight:400;font-size:1.18em}
+.f-narrow       {font-family:'Arial Narrow','Inter',sans-serif;font-weight:400;letter-spacing:.005em}
+.f-narrow-bold  {font-family:'Arial Narrow','Inter',sans-serif;font-weight:700;letter-spacing:.005em}
+
+/* ALIGNMENT MIX — máximo 2 BLOCOS por slide.
+   Regra: majoritário à esquerda + minoritário centralizado.
+   Left-aligned ganha padding-left generoso pra respirar da borda.
+   Gap grande entre blocos (slides com al-* usam `.two-block`). */
+/* Body padding já provê margin generoso (130px). .al-* não adiciona
+   padding extra — isso garante que texto left-aligned começa exatamente
+   onde o ícone tl está posicionado (alinhamento visual). */
+.body > .al-l{align-self:flex-start;text-align:left}
+.body > .al-c{align-self:center;text-align:center}
+.body > .al-r{align-self:flex-end;text-align:right}
+
+/* Group wrapper — quando o bloco tem múltiplos elementos (setup + hero etc),
+   agrupa eles com gap interno menor. Alinhamento aplicado no grupo inteiro. */
+.body > .group{display:flex;flex-direction:column;gap:32px}
+
+/* Quando o body tem 2 blocos visuais, o gap entre eles deve ser grande */
+.body.two-block{gap:110px}
+
+/* TEMPLATE 3-ZONAS (split vertical):
+   • ícone no topo OU bottom (via .mark)
+   • bloco de texto 1 — começa após zona reservada do mark
+   • bloco de texto 2 — termina antes da zona reservada do mark bottom
+   Ideal pra slides com 2 blocos distintos (body-copy + hero).
+
+   ⚠️ MARK-SAFE: 320 top + 260 bottom reservam zonas de ambos os marks
+   (top ou bottom) — conteúdo nunca colide com ícone. */
+.body.tpl-split{
+  justify-content:space-between;
+  padding:320px 130px 260px;
+}
+
+/* TEMPLATE TOP-HEAVY · conteúdo concentrado na parte superior, bottom livre.
+   Use quando o hero é grande E o ícone é no bottom — evita colisão e
+   equilibra visualmente puxando tudo pra cima.
+
+   ⚠️ MARK-SAFE: padding-top de 260px reserva a zona do mark (y=130 + 48px
+   height + 82px respiro). Se mark estiver no top, conteúdo começa abaixo
+   sem overlap. Se mark no bottom, bottom 260px também reserva. */
+.body.tpl-up{
+  justify-content:flex-start;
+  padding:260px 130px 260px;
+}
+
+/* TEMPLATE BALANCED · conteúdo centralizado com mark-safe em ambas as pontas.
+   padding 260/260 reserva zona do mark (y=130-178 no topo, y=1172-1220 no
+   bottom) em ambas as pontas. Content centraliza entre os dois blocos de
+   260px, ficando no miolo real do slide independente de onde o mark esteja.
+   Use pra slides solo/hero centralizado ou content compacto. */
+.body.tpl-balanced{
+  justify-content:center;
+  padding:260px 130px 260px;
+}
+
+/* TEMPLATE DIAGONAL — bloco 1 top-left + bloco 2 bottom-right
+   (texto dentro continua left-aligned, só o bloco é posicionado à direita).
+   Icon alinha com a borda esquerda do texto do bloco 2 (diag-anchor).
+   padding-bottom grande pra empurrar o bloco 2 pra cima e criar gap visível
+   entre o texto e o ícone. */
+.body.tpl-diag{
+  justify-content:space-between;
+  padding:130px 130px 400px;
+}
+.body.tpl-diag > :last-child{
+  align-self:flex-end;
+  text-align:left;
+  max-width:65%;
+  padding-right:80px;
+  padding-left:0;
+}
+
+
+/* Size modifiers — recalibrados pra UPPERCASE (glyphs mais largos) */
+.s-xs{font-size:96px !important}
+.s-sm{font-size:118px !important}
+.s-md{font-size:144px !important}
+.s-lg{font-size:176px !important}
+.s-xl{font-size:210px !important}
+.s-xxl{font-size:250px !important}
+
+/* STAMP — palavra do próprio texto promovida a tape rotacionada.
+   Igual a ref #2 ("NADA FOI DESTRUÍDO. [FOI] ESCONDIDO"): a palavra-pivot
+   aparece como bloco rotacionado, caixa alta forçada, dentro do fluxo.
+
+   ⚠️ REGRA DAS 4 CAMADAS: stamp usa SEMPRE 2 cores que NÃO são a bg do
+   slide NEM a cor principal do texto. Com 4 cores brand e 2 ocupadas pelo
+   slide, sobram 2 pro stamp. Nenhuma camada repete outra.
+
+   Nomenclatura: .stamp.BG-TEXTO (ex: .az-cr = azul+bege, .cr-vd = bege+verde). */
+.stamp{
+  display:inline-block;
+  align-self:flex-start;
+  padding:10px 30px 18px;
+  font-family:'Anton','Archivo Black',sans-serif;
+  font-size:130px;
+  letter-spacing:-.02em;
+  text-transform:uppercase;
+  line-height:.85;
+  font-weight:400;
+  white-space:nowrap;
+  transform:rotate(-4deg);
+  /* cor default neutra — sempre escolher variante explícita */
+  background:var(--azul);color:var(--cream);
+}
+/* tamanhos proporcionais ao hero do slide */
+.stamp.sm{font-size:80px;padding:8px 22px 14px}
+.stamp.md{font-size:110px;padding:10px 26px 16px}
+.stamp.lg{font-size:170px;padding:14px 38px 24px}
+.stamp.tilt-right{transform:rotate(4deg)}
+.stamp.over{position:absolute;z-index:5}
+
+/* Variantes de cor por combinação bg+texto.
+   Use apenas a combinação permitida pela paleta do slide:
+
+   p-verde    (vd+am) → stamp em .az-am, .az-cr, .cr-az, .cr-am
+   p-amarelo  (am+vd) → stamp em .az-cr, .az-vd, .cr-az, .cr-vd
+   p-azul     (az+am) → stamp em .vd-cr, .vd-am ≠ (am é text), .cr-vd, .cr-am ≠
+                        → válidos: .vd-cr, .cr-vd
+   p-cream-az (cr+az) → stamp em .vd-am, .am-vd
+   p-cream-vd (cr+vd) → stamp em .az-am, .am-az */
+.stamp.az-am {background:var(--azul);    color:var(--amarelo)}
+.stamp.az-cr {background:var(--azul);    color:var(--cream)}
+.stamp.az-vd {background:var(--azul);    color:var(--verde)}
+.stamp.vd-am {background:var(--verde);   color:var(--amarelo)}
+.stamp.vd-cr {background:var(--verde);   color:var(--cream)}
+.stamp.vd-az {background:var(--verde);   color:var(--azul)}
+.stamp.am-vd {background:var(--amarelo); color:var(--verde)}
+.stamp.am-az {background:var(--amarelo); color:var(--azul)}  /* só em bg que não é am nem az */
+.stamp.am-cr {background:var(--amarelo); color:var(--cream)} /* contraste fraco, evitar */
+.stamp.cr-az {background:var(--cream);   color:var(--azul)}
+.stamp.cr-vd {background:var(--cream);   color:var(--verde)}
+.stamp.cr-am {background:var(--cream);   color:var(--amarelo)} /* contraste fraco, evitar */
+
+/* Color palettes — campo + tipo + CTA */
+/* Paletas · 4 cores recombinadas, sempre alto contraste */
+.p-verde    {background:var(--verde);   color:var(--amarelo)}
+.p-verde    .cta{color:var(--amarelo);border-color:rgba(254,191,0,.35)}
+.p-amarelo  {background:var(--amarelo); color:var(--verde)}
+.p-amarelo  .cta{color:var(--verde);border-color:rgba(43,148,2,.30)}
+.p-azul     {background:var(--azul);    color:var(--amarelo)}
+.p-azul     .cta{color:var(--amarelo);border-color:rgba(254,191,0,.35)}
+.p-cream-az {background:var(--cream);   color:var(--azul)}
+.p-cream-az .cta{color:var(--azul);border-color:rgba(0,92,225,.28)}
+.p-cream-vd {background:var(--cream);   color:var(--verde)}
+.p-cream-vd .cta{color:var(--verde);border-color:rgba(43,148,2,.28)}
+/* p-am-azul (amarelo+azul) REMOVIDO — contraste ruim.
+   Em bg amarelo use verde grande ou body-copy com .box bege. */
+
+/* Product anchor (slide 20 only) */
+.product{
+  display:flex;justify-content:center;align-items:flex-end;
+  padding:0 0 40px;
+}
+.product img{width:42%;transform:rotate(180deg)}
+
+/* ═══════ FORMATO 1 · FOTO FULL-BLEED ═══════
+   Foto preenche toda a tela como background. Texto sobrepõe.
+   Aplicar no .slide com classe .photo-bleed, passando a URL
+   via inline style: `style="background-image:url('assets/img.jpg')"`.
+
+   Para legibilidade, forçamos cor do texto (cream ou amarelo)
+   via .slide.photo-bleed — a paleta do slide (p-verde etc)
+   continua ditando o contraste. */
+.slide.photo-bleed{
+  background-size:cover;
+  background-position:center;
+  background-color:#000;
+}
+.slide.photo-bleed > *{position:relative;z-index:2}
+/* OVERLAY uniforme 35% preto — escurece a foto globalmente, cria contraste
+   consistente pro texto em cream/amarelo em qualquer zona da foto. */
+.slide.photo-bleed::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  z-index:1;
+  pointer-events:none;
+}
+
+/* Em photo-bleed APENAS cream e amarelo. Nunca verde nem azul
+   (ambos perdem leitura na foto). */
+.slide.photo-bleed .mark{color:var(--cream)}
+.slide.photo-bleed .setup{color:var(--cream)}
+.slide.photo-bleed .body-copy{color:var(--cream)}
+.slide.photo-bleed .hero-line,
+.slide.photo-bleed .equal,
+.slide.photo-bleed .solo{color:var(--amarelo)}
+.slide.photo-bleed .cta{color:var(--cream)!important}
+
+/* ═══════ FORMATO 2 · POLAROID CARD ═══════
+   Foto pequena como âncora no corpo do slide. Cantos arredondados,
+   sem borda (ref #8: photo card centralizada no bottom). */
+.photo-card{
+  margin:0 auto;
+  width:300px;
+  aspect-ratio:4/5;
+  border-radius:22px;
+  overflow:hidden;
+  flex-shrink:0;
+}
+.photo-card img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-card.sm{width:240px}
+.photo-card.md{width:300px}
+.photo-card.lg{width:380px}
+.photo-card.wide{width:420px;aspect-ratio:5/4}
+.photo-card.left{margin-left:0}
+.photo-card.right{margin-right:0;margin-left:auto}
+
+/* Polaroid absoluto — fora do fluxo flex do body, posicionado no canvas
+   do slide (geralmente na lateral livre). Não participa do cálculo de
+   layout, logo não quebra tpl-split/tpl-balanced/two-block.
+   Usar inline `style="top:...;right:..."` pra posicionar em espaço livre.
+   Importante: nunca colocar em cima nem embaixo do texto — sempre na
+   coluna lateral oposta ao texto. */
+.photo-card.abs{position:absolute;z-index:2;margin:0}
+
+/* ─── grid overview ─── */
+.grid-wrap{margin-top:64px}
+.grid-head{font-family:'Anton',sans-serif;font-size:32px;color:var(--azul);text-transform:lowercase;margin-bottom:8px;font-weight:400}
+.grid-sub{font-family:'Bayon',sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--verde);opacity:.7;margin-bottom:24px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.thumb{aspect-ratio:4/5;background:#000;border-radius:6px;overflow:hidden;position:relative;box-shadow:0 1px 6px rgba(0,0,0,.08);cursor:pointer}
+.thumb .mini{width:1080px;height:1350px;position:absolute;inset:0;transform-origin:0 0;transform:scale(calc(180/1080));pointer-events:none}
+.thumb-num{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-family:'Bayon',sans-serif;letter-spacing:.14em;padding:2px 7px;border-radius:3px;z-index:5}
+
+.diamond{display:block}
+
+/* ─── Export bar · botão de download PNG ─── */
+.export-bar{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.dl-btn{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:18px 32px;
+  background:var(--verde);color:var(--amarelo);
+  font-family:'Bayon',sans-serif;font-size:18px;letter-spacing:.2em;text-transform:uppercase;
+  border:none;border-radius:4px;cursor:pointer;
+  transition:background .15s ease;
+}
+.dl-btn:hover{background:var(--azul)}
+.dl-btn:disabled{opacity:.7;cursor:wait;background:var(--verde)}
+.dl-btn svg{width:22px;height:22px}
+.dl-hint{font-family:'Inter',sans-serif;font-size:12px;color:var(--verde);opacity:.75;text-align:center}
+.dl-hint code{font-family:ui-monospace,monospace;font-size:11px;background:var(--cream);padding:2px 6px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>manifesto</h1>
+    <div class="lbl">@usepedireito__ · 10 slides · você não está sozinho</div>
+  </div>
+
+  <div class="device">
+    <div class="post-head">
+      <div class="post-avatar">
+        <svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg>
+      </div>
+      <div class="post-user">usepedireito__<svg class="verified" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 2.4 3.4-.4.4 3.4L20.6 10 19.2 12l1.4 2-2.4 2.4-.4 3.4-3.4-.4L12 22l-2.4-2.4-3.4.4-.4-3.4L3.4 14l1.4-2-1.4-2 2.4-2.4.4-3.4 3.4.4zM10 15l5-5-1.4-1.4L10 12.2l-1.6-1.6L7 12z"/></svg></div>
+      <div class="post-more">···</div>
+    </div>
+
+    <div class="carousel" id="carousel">
+      <span class="page-chip" id="pageChip">1/10</span>
+      <button class="nav-btn prev" id="prevBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="nav-btn next" id="nextBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+
+      <div class="track" id="track">
+
+        <!-- 01 · hook · photo-bleed img-04 · solo centered (abertura distinta) -->
+        <div class="slide-holder"><div class="slide photo-bleed" style="background-image:url('assets/midia/img-04.jpg')">
+          <div class="mark tc"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up center tpl-balanced">
+            <div class="solo s-sm">você não<br>está<br><b>sozinho.</b></div>
+          </div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 02 · problema · dúvida crescendo -->
+        <div class="slide-holder"><div class="slide p-cream-az">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up two-block tpl-split">
+            <div class="body-copy al-l">Você abre o celular…<br>E parece que perdemos.<br>Você sai na rua…<br>E parece que ninguém<br>pensa como você.</div>
+            <div class="hero-line s-sm al-c">e a <b>dúvida</b><br>começa a crescer.</div>
+          </div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 03 · contraste · é recorte, é narrativa -->
+        <div class="slide-holder"><div class="slide p-amarelo">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up two-block tpl-split">
+            <div class="body-copy al-l">Mas essa sensação<br>não é a realidade.<br>É recorte. É narrativa.</div>
+            <div class="hero-line s-xs al-c">é o que<br><b>escolheram</b><br>te mostrar.</div>
+          </div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 04 · diagnóstico · ilusão de maioria -->
+        <div class="slide-holder"><div class="slide p-azul">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up two-block tpl-split">
+            <div class="body-copy al-l">Criaram a ilusão<br>de maioria.<br>Repetição constante.<br>Pressão social.</div>
+            <div class="hero-line s-sm al-c">tudo pra<br>você <b>desistir</b>.</div>
+          </div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 05 · vilão · sensação de isolamento -->
+        <div class="slide-holder"><div class="slide p-cream-vd">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up two-block tpl-split">
+            <div class="body-copy al-l">O maior inimigo não é<br>quem pensa diferente.<br>É a sensação de isolamento.<br>Porque quando você acha<br>que está sozinho…</div>
+            <div class="hero-line s-sm al-c">você <b>para</b> de<br>se posicionar.</div>
+          </div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 06 · novo jogo · milhões pras ruas · full-bleed img-06 -->
+        <div class="slide-holder"><div class="slide photo-bleed" style="background-image:url('assets/midia/img-06.jpg')">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up two-block tpl-split">
+            <div class="body-copy lg al-l">Mas olha de novo.<br>Enquanto diziam<br>que o país tinha mudado…</div>
+            <div class="equal s-xs al-c">milhões na rua.<br>cidades mudaram.<br>geração acordou.</div>
+          </div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 07 · lição · quem acorda muda o jogo -->
+        <div class="slide-holder"><div class="slide p-cream-az">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up tpl-up">
+            <div class="hero-line s-md">quem <b>acorda</b><br>muda o jogo.</div>
+            <div class="body-copy">E quando muita gente acorda…<br>A narrativa perde força.<br>E a realidade volta a aparecer.</div>
+          </div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 08 · exemplos · tríade -->
+        <div class="slide-holder"><div class="slide p-cream-vd">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up two-block tpl-balanced">
+            <div class="body-copy al-c">Hoje você já consegue ver:</div>
+            <div class="hero-line s-xs al-l">jovens escolhendo<br><b>família</b>.<br>pessoas defendendo<br><b>a fé</b>.<br>gente crescendo<br><b>sem desculpa</b>.</div>
+            <div class="body-copy sm al-c">Isso não é exceção. É movimento.</div>
+          </div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 09 · oportunidade · Brasil que voltou · polaroid img-22 -->
+        <div class="slide-holder"><div class="slide p-azul">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body up tpl-split">
+            <div class="body-copy">Foi desse Brasil que voltou<br>a acreditar em si mesmo…</div>
+            <div class="hero-line s-md"><b>nasceu</b> a<br><span style="text-transform:none">PéDireito</span>.</div>
+          </div>
+          <div class="photo-card abs sm" style="top:50%;right:130px;transform:translateY(-50%)"><img src="assets/midia/img-22.jpg" alt=""></div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+        <!-- 10 · cta · assinatura PéDireito bleed bottom -->
+        <div class="slide-holder"><div class="slide p-verde">
+          <div class="mark"><svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+          <div class="body center up" style="padding-bottom:420px">
+            <div class="body-copy sm">Chegou a hora de se levantar.<br>Tudo começa com um passo.</div>
+            <div class="hero-line s-sm">o seu começa<br>com o</div>
+          </div>
+          <div class="bleed bottom mixed-case">PéDireito.</div>
+          <div class="cta"><span>x</span><span class="arr">→</span></div>
+        </div></div>
+
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <div class="post-actions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3C14.76 3 13.09 3.81 12 5.09C10.91 3.81 9.24 3 7.5 3C4.42 3 2 5.42 2 8.5C2 12.28 5.4 15.36 10.55 20.04L12 21.35L13.45 20.03C18.6 15.36 22 12.28 22 8.5C22 5.42 19.58 3 16.5 3Z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      <svg class="right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <div class="post-likes">12.837 curtidas</div>
+    <div class="post-caption"><b>usepedireito__</b>você não está sozinho — só estão tentando fazer você acreditar nisso. <span style="color:#005CE1">#usepédireito</span> #vocenaoestasozinho</div>
+    <div class="post-time">agora mesmo</div>
+  </div>
+
+  <div class="export-bar">
+    <button id="dl-btn" class="dl-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span>baixar 10 PNGs · 1080×1350</span>
+    </button>
+    <div class="dl-hint" id="dl-hint">Cada slide será gerado individualmente · <code>pedireito-slide-01.png</code> a <code>-10.png</code></div>
+  </div>
+
+  <div class="grid-wrap">
+    <div class="grid-head">overview · 10 slides</div>
+    <div class="grid-sub">manifesto · você não está sozinho</div>
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.min.js"></script>
+<script>
+(function(){
+  const track=document.getElementById('track');
+  const chip=document.getElementById('pageChip');
+  const dots=document.getElementById('dots');
+  const prev=document.getElementById('prevBtn');
+  const next=document.getElementById('nextBtn');
+  const total=track.children.length;
+  let cur=0;
+
+  /* ── Posição do ícone diamante por slide ──
+     REGRA: diamante acompanha o alinhamento horizontal do conteúdo.
+       • todo conteúdo à esquerda → diamante à esquerda (tl ou bl)
+       • qualquer conteúdo centralizado → diamante centralizado (tc ou bc)
+     Vertical (top/bottom) pode variar por ritmo. */
+  // REGRA: ícone segue o alinhamento do bloco MAIS PRÓXIMO dele.
+  // Ícone no topo → olha o bloco do topo. Ícone no bottom → olha o bloco do bottom.
+  const markPositions = [
+    'tc', // 01 solo centralizado → tc (segue text-center)
+    'tl', // 02 body-copy L topo → tl
+    'tl', // 03 body-copy L topo → tl
+    'tl', // 04 body-copy L topo → tl
+    'bc', // 05 hero al-c bottom → bc (mark segue centralização do hero)
+    'bc', // 06 body-copy C bottom → bc (full-bleed)
+    'tl', // 07 body-copy L topo → tl
+    'bc', // 08 body-copy C bottom → bc
+    'tl', // 09 body-copy L topo → tl
+    'tc'  // 10 tudo centralizado → tc
+  ];
+  [...track.children].forEach((h,i)=>{
+    const m=h.querySelector('.mark');
+    if(m && markPositions[i]) m.classList.add(markPositions[i]);
+  });
+  for(let i=0;i<total;i++){
+    const d=document.createElement('span');
+    if(i===0)d.classList.add('on');
+    d.addEventListener('click',()=>go(i));
+    dots.appendChild(d);
+  }
+  function go(i){
+    cur=Math.max(0,Math.min(total-1,i));
+    track.style.transform=`translateX(-${cur*100}%)`;
+    chip.textContent=`${cur+1}/${total}`;
+    [...dots.children].forEach((d,idx)=>d.classList.toggle('on',idx===cur));
+    prev.disabled=cur===0;
+    next.disabled=cur===total-1;
+  }
+  prev.addEventListener('click',()=>go(cur-1));
+  next.addEventListener('click',()=>go(cur+1));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft')go(cur-1);
+    if(e.key==='ArrowRight')go(cur+1);
+  });
+  go(0);
+
+  const thumbs=document.getElementById('thumbs');
+  [...track.children].forEach((slot,idx)=>{
+    const t=document.createElement('div');
+    t.className='thumb';
+    const mini=document.createElement('div');
+    mini.className='mini';
+    mini.innerHTML=slot.querySelector('.slide').outerHTML;
+    t.appendChild(mini);
+    const num=document.createElement('span');
+    num.className='thumb-num';
+    num.textContent=String(idx+1).padStart(2,'0');
+    t.appendChild(num);
+    t.addEventListener('click',()=>{
+      go(idx);
+      document.getElementById('carousel').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    thumbs.appendChild(t);
+  });
+
+  /* ══════ DOWNLOAD PNG ══════
+     Pra cada slide, clona o .slide em um container offscreen de 1080×1350
+     (remove o transform:scale do preview), renderiza com html2canvas,
+     gera o PNG e dispara o download. */
+  const dlBtn=document.getElementById('dl-btn');
+  const dlHint=document.getElementById('dl-hint');
+
+  async function waitForImages(root){
+    const imgs=[...root.querySelectorAll('img')];
+    await Promise.all(imgs.map(img=>{
+      if(img.complete && img.naturalWidth) return Promise.resolve();
+      return new Promise(res=>{
+        img.onload=img.onerror=()=>res();
+      });
+    }));
+  }
+
+  async function captureSlide(slideEl,i){
+    // Container na origem 0,0 com opacity:0 — visível pro renderer mas oculto
+    const wrap=document.createElement('div');
+    wrap.style.position='absolute';
+    wrap.style.left='0';
+    wrap.style.top='0';
+    wrap.style.width='1080px';
+    wrap.style.height='1350px';
+    wrap.style.overflow='hidden';
+    wrap.style.opacity='0';
+    wrap.style.pointerEvents='none';
+    wrap.style.zIndex='-9999';
+    wrap.style.background='transparent';
+
+    const clone=slideEl.cloneNode(true);
+    clone.style.transform='none';
+    clone.style.position='absolute';
+    clone.style.left='0';
+    clone.style.top='0';
+    clone.style.inset='auto';
+    clone.style.width='1080px';
+    clone.style.height='1350px';
+    clone.style.margin='0';
+    clone.style.transformOrigin='0 0';
+
+    wrap.appendChild(clone);
+    document.body.insertBefore(wrap,document.body.firstChild);
+
+    await waitForImages(clone);
+    await document.fonts.ready;
+    await new Promise(r=>setTimeout(r,250));
+
+    // html-to-image usa SVG foreignObject, mais confiável que html2canvas
+    const dataUrl = await htmlToImage.toPng(clone, {
+      width: 1080,
+      height: 1350,
+      pixelRatio: 1,
+      cacheBust: true,
+      skipFonts: false,
+      backgroundColor: null,
+    });
+
+    document.body.removeChild(wrap);
+
+    const a=document.createElement('a');
+    a.download=`pedireito-slide-${String(i+1).padStart(2,'0')}.png`;
+    a.href=dataUrl;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  dlBtn.addEventListener('click',async function(){
+    const slides=[...track.querySelectorAll('.slide')];
+    dlBtn.disabled=true;
+    const origLabel=dlBtn.querySelector('span').textContent;
+    try{
+      for(let i=0;i<slides.length;i++){
+        dlBtn.querySelector('span').textContent=`gerando ${i+1}/${slides.length}…`;
+        await captureSlide(slides[i],i);
+        await new Promise(r=>setTimeout(r,220)); // browser throttle entre downloads
+      }
+      dlBtn.querySelector('span').textContent='✓ 10 PNGs baixados';
+      setTimeout(()=>{dlBtn.querySelector('span').textContent=origLabel;dlBtn.disabled=false;},1800);
+    }catch(err){
+      console.error(err);
+      dlBtn.querySelector('span').textContent='erro — ver console';
+      dlBtn.disabled=false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

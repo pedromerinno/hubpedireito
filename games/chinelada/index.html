@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chinelada - PeDireito</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Nunito', sans-serif;
+            touch-action: none;
+        }
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        canvas { display: block; width: 100%; height: 100%; }
+
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px 24px;
+        }
+        .hud-box {
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 8px 16px;
+            color: white;
+        }
+        .hud-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+        }
+        .hud-value {
+            font-family: 'Bangers', cursive;
+            font-size: 28px;
+            letter-spacing: 2px;
+        }
+        #chinelos-left {
+            font-size: 24px;
+            display: flex;
+            gap: 4px;
+        }
+        .chinelo-icon { filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+        .chinelo-used { opacity: 0.2; }
+
+        /* Power bar */
+        #power-bar-container {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 8px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        #power-bar-container.visible { opacity: 1; }
+        #power-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.05s;
+        }
+
+        /* Overlays */
+        #overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            z-index: 20;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        #overlay.hidden { display: none !important; }
+        .overlay-title {
+            font-family: 'Bangers', cursive;
+            font-size: clamp(40px, 8vw, 72px);
+            color: #FFD700;
+            text-shadow: 3px 3px 0 #c7940a, 6px 6px 0 rgba(0,0,0,0.3);
+            letter-spacing: 4px;
+        }
+        .overlay-subtitle {
+            font-size: clamp(16px, 3vw, 24px);
+            color: rgba(255,255,255,0.8);
+            margin-top: 4px;
+        }
+        .overlay-brand {
+            font-size: 14px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 24px;
+        }
+        .overlay-action {
+            margin-top: 32px;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #FFD700, #FF8C00);
+            border: none;
+            border-radius: 30px;
+            font-family: 'Bangers', cursive;
+            font-size: 22px;
+            letter-spacing: 2px;
+            color: #1a1a2e;
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(255,165,0,0.4);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .overlay-action:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 28px rgba(255,165,0,0.6);
+        }
+        .stars-row {
+            font-size: 48px;
+            margin: 16px 0;
+        }
+        .star-off { opacity: 0.2; }
+        .level-desc {
+            font-size: 16px;
+            color: #FF6347;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        /* Aim helper */
+        #aim-hint {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="hud">
+            <div id="hud-top">
+                <div class="hud-box">
+                    <div class="hud-label">Fase</div>
+                    <div class="hud-value" id="level-num">1</div>
+                </div>
+                <div id="chinelos-left"></div>
+                <div class="hud-box">
+                    <div class="hud-label">Pontos</div>
+                    <div class="hud-value" id="score-val">0</div>
+                </div>
+            </div>
+            <div id="power-bar-container">
+                <div id="power-bar"></div>
+            </div>
+            <div id="aim-hint" class="hidden">Arraste para mirar, solte para lançar!</div>
+        </div>
+
+        <div id="overlay" onclick="game.onOverlayClick()">
+            <div class="overlay-title">CHINELADA!</div>
+            <div class="overlay-subtitle">🩴 by PeDireito</div>
+            <button class="overlay-action">JOGAR</button>
+            <div class="overlay-brand">Brasilidade no pé e na mão</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="game3d.js"></script>
+</body>
+</html>

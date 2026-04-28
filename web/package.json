@@ -1,0 +1,30 @@
+{
+  "name": "pedireito-web",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Monorepo Pé Direito — apps e pacotes compartilhados (Supabase, UI, config).",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "dev:countdown": "npm run dev --workspace=@pedireito/countdown",
+    "dev:lp": "npm run dev --workspace=@pedireito/lp-lancamento",
+    "dev:painel": "npm run dev --workspace=@pedireito/painel-admin",
+    "dev:revendedores": "npm run dev --workspace=@pedireito/revendedores",
+    "dev:portal": "npm run dev --workspace=@pedireito/portal"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.6.2"
+}
