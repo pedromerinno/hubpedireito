@@ -113,7 +113,7 @@ export function SiteFooter({
             <h2 className={headingCls}>Conecta com a gente</h2>
             <div className="flex items-center gap-4">
               <a
-                href="https://instagram.com/pedireito"
+                href="https://www.instagram.com/usepedireito__"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram do Pé Direito"
@@ -122,7 +122,7 @@ export function SiteFooter({
                 <Instagram className="h-6 w-6 sm:h-7 sm:w-7" />
               </a>
               <a
-                href="https://tiktok.com/@pedireito"
+                href="https://www.tiktok.com/@usepedireito"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="TikTok do Pé Direito"

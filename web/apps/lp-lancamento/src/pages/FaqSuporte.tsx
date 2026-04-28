@@ -112,7 +112,7 @@ const FaqSuporte = () => {
               className="w-full sm:w-auto bg-amarelo text-verde-escuro hover:bg-amarelo/90 font-narrow font-semibold rounded-full px-8 py-6 text-base"
             >
               <a
-                href="https://www.usepedireito.com.br/contato"
+                href="https://wa.me/552731990337"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2"
