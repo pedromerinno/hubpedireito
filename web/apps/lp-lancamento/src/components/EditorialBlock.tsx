@@ -10,6 +10,8 @@ interface EditorialBlockProps {
    */
   videoSrc?: string;
   imagePosition?: "left" | "right";
+  /** object-position da imagem — default "center" */
+  imageFocus?: string;
   children: React.ReactNode;
   className?: string;
 }
@@ -19,6 +21,7 @@ export function EditorialBlock({
   alt,
   videoSrc,
   imagePosition = "right",
+  imageFocus = "center",
   children,
   className,
 }: EditorialBlockProps) {
@@ -50,12 +53,14 @@ export function EditorialBlock({
             playsInline
             aria-label={alt}
             className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: imageFocus }}
           />
         ) : (
           <img
             src={src}
             alt={alt}
             className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: imageFocus }}
             loading="lazy"
           />
         )}

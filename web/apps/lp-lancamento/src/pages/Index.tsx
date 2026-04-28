@@ -6,6 +6,7 @@ import { LaunchDateBanner } from "@/components/LaunchDateBanner";
 import { PreparationChecklist } from "@/components/PreparationChecklist";
 
 import { ProductGallery } from "@/components/ProductGallery";
+import { ProductCarousel } from "@/components/ProductCarousel";
 import { SiteFooter } from "@/components/SiteFooter";
 import { FullBleedImage } from "@/components/FullBleedImage";
 import { EditorialBlock } from "@/components/EditorialBlock";
@@ -131,6 +132,7 @@ const Index = () => {
         src="/images/img-12.jpg"
         alt="Fachada de prédio com a palavra BRASIL pintada em verde sobre parede bege"
         imagePosition="right"
+        imageFocus="top center"
         className="bg-cream"
       >
         <span className="inline-block font-narrow font-medium text-azul text-xs sm:text-sm bg-[#FFF2C9] rounded-full px-5 py-2 w-fit">
@@ -152,8 +154,8 @@ const Index = () => {
         </p>
       </EditorialBlock>
 
-      {/* ─────────── PULL QUOTE · VERDE ─────────── */}
-      <section className="bg-verde text-amarelo px-6 sm:px-10 py-20 sm:py-28 lg:py-36 min-h-[400px] sm:min-h-[500px] flex items-center">
+      {/* ─────────── PULL QUOTE + CARROSSEL · VERDE ─────────── */}
+      <section className="bg-verde text-amarelo px-6 sm:px-10 pt-20 sm:pt-28 lg:pt-36 pb-16 sm:pb-20 lg:pb-28">
         <div className="max-w-4xl mx-auto text-center">
           <p className="font-narrow text-amarelo/85 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10 sm:mb-12">
             A Pé Direito nasceu pra representar o que acreditamos.
@@ -163,13 +165,18 @@ const Index = () => {
             toda compra é um posicionamento.
           </p>
 
-          <div className="font-narrow text-amarelo/80 mt-10 sm:mt-12 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto space-y-1">
+        </div>
+
+        <ProductCarousel inline />
+
+        <div className="max-w-2xl mx-auto text-center mt-12 sm:mt-16">
+          <div className="font-narrow text-amarelo/80 text-lg sm:text-xl leading-relaxed space-y-1">
             <p>O que você compra…</p>
             <p>mostra o que você apoia.</p>
             <p>Mesmo que você não perceba.</p>
           </div>
 
-          <div className="font-narrow text-amarelo/80 mt-8 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto space-y-1">
+          <div className="font-narrow text-amarelo/80 mt-8 text-lg sm:text-xl leading-relaxed space-y-1">
             <p>Todos os dias, você está financiando algo.</p>
             <p>Uma ideia.</p>
             <p>Um comportamento.</p>
@@ -256,8 +263,8 @@ const Index = () => {
 
       {/* ─────────── COMEÇO DO DIA · MANIFESTO DIÁRIO ─────────── */}
       <EditorialBlock
-        src="/images/img-03.jpg"
-        alt="Cão deitado na calçada com parede amarela e porta azul ao fundo"
+        src="/images/Camiseta_Listrada.jpg"
+        alt="Camiseta listrada amarela e branca Pé Direito pendurada no varal com céu azul ao fundo"
         imagePosition="right"
         className="bg-cream"
       >
@@ -304,11 +311,15 @@ const Index = () => {
       <section className="bg-cream">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[500px] lg:min-h-[600px]">
           <div className="relative min-h-[400px] sm:min-h-[480px] lg:min-h-0 overflow-hidden order-2 lg:order-1">
-            <img
-              src="/images/img-09.jpg"
-              alt="Barco de pescador verde e amarelo chamado Gratidão ancorado na praia"
+            <video
+              src="/videos/barco-gratidao.mp4"
+              poster="/images/img-09.jpg"
+              autoPlay
+              loop
+              muted
+              playsInline
+              aria-label="Barco de pescador verde e amarelo chamado Gratidão ancorado na praia"
               className="absolute inset-0 w-full h-full object-cover"
-              loading="lazy"
             />
           </div>
 
