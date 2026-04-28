@@ -98,7 +98,7 @@ export function ProductCarousel({ inline = false }: ProductCarouselProps) {
 
   const content = (
     <div ref={wrapperRef} className="relative">
-      <div className="relative flex items-center justify-center h-[380px] sm:h-[460px] lg:h-[520px] overflow-hidden">
+      <div className="relative flex items-center justify-center h-[380px] sm:h-[460px] lg:h-[620px] overflow-hidden">
         {products.map((product, index) => (
           <div
             key={product.id}
@@ -106,7 +106,7 @@ export function ProductCarousel({ inline = false }: ProductCarouselProps) {
             className="absolute"
             style={{ willChange: "transform, opacity" }}
           >
-                <div className="w-[340px] sm:w-[380px] lg:w-[440px] aspect-square flex items-center justify-center">
+                <div className="w-[340px] sm:w-[400px] lg:w-[560px] aspect-square flex items-center justify-center">
               <img
                 src={product.image}
                 alt={`Chinelo Pé Direito ${product.name}`}
