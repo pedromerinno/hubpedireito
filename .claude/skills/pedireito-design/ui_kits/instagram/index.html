@@ -1,0 +1,431 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Pé Direito — Instagram Kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:56px 48px 120px;background:#F6F6E5;color:#2B9402;font-family:-apple-system,'Inter',sans-serif;min-height:100vh}
+.wrap{max-width:1280px;margin:0 auto}
+.hero{padding-bottom:28px;border-bottom:2px solid #FEBF00;margin-bottom:40px}
+h1{font-family:var(--font-display);font-size:46px;color:#2B9402;margin:0 0 6px;text-transform:lowercase;font-weight:normal;letter-spacing:.01em}
+.lbl{font-family:var(--font-narrow);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#2B9402;opacity:.7}
+.sec-head{font-family:var(--font-display);font-size:28px;color:#005CE1;margin:0 0 6px;text-transform:lowercase;font-weight:normal}
+.sec-sub{font-family:var(--font-narrow);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#2B9402;margin-bottom:24px;opacity:.7}
+
+/* Instagram post chrome */
+.device{max-width:540px;margin:0 auto 48px;background:#fff;border:1px solid #dbdbdb;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.post-head{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.post-avatar{width:34px;height:34px;border-radius:50%;background:#F9F1D1;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid #FEBF00}
+.post-avatar svg{width:20px;height:12px;color:#2B9402}
+.post-user{font-size:14px;font-weight:600;color:#262626;flex:1;display:flex;align-items:center;gap:6px}
+.verified{width:14px;height:14px;color:#0095F6}
+.post-more{color:#262626;font-size:20px;letter-spacing:1px;padding-bottom:6px}
+
+.carousel{aspect-ratio:4/5;position:relative;overflow:hidden;background:#F9F1D1}
+.track{display:flex;height:100%;transition:transform .35s cubic-bezier(.2,.9,.2,1)}
+.slide-holder{flex:0 0 100%;height:100%;position:relative;overflow:hidden}
+.dots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10}
+.dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.55);transition:background .2s}
+.dots span.on{background:#0095F6}
+.nav-btn{position:absolute;top:50%;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transform:translateY(-50%);z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.nav-btn svg{width:16px;height:16px;color:#262626}
+.nav-btn.prev{left:10px}.nav-btn.next{right:10px}
+.nav-btn:disabled{opacity:0;pointer-events:none}
+.page-chip{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.5);color:#fff;font-size:12px;font-weight:600;padding:4px 10px;border-radius:14px;z-index:10}
+
+.post-actions{display:flex;gap:16px;padding:10px 16px 4px;align-items:center}
+.post-actions svg{width:26px;height:26px;color:#262626;cursor:pointer;stroke-width:1.6}
+.post-actions .right{margin-left:auto}
+.post-likes{padding:6px 16px 0;font-size:14px;font-weight:600;color:#262626}
+.post-caption{padding:6px 16px;font-size:14px;color:#262626;line-height:1.4}
+.post-caption b{font-weight:600;margin-right:6px}
+.post-caption .hash{color:#003569}
+.post-time{padding:4px 16px 14px;font-size:11px;color:#8e8e8e;text-transform:uppercase;letter-spacing:.04em}
+
+/* ══════════ SLIDE SYSTEM (1080×1350 scaled → 540×675) ══════════ */
+.slide{width:1080px;height:1350px;position:absolute;inset:0;transform-origin:0 0;transform:scale(calc(540/1080));font-family:'Archivo Black','Anton Condensed','Anton',sans-serif;overflow:hidden}
+
+/* POSTER type — Tusker Grotesk substitute.
+   Use Anton / Archivo Black with compressed scaleX for ultra-condensed look + tight tracking */
+.tusker{font-family:'Anton','Archivo Black',sans-serif;text-transform:uppercase;font-weight:400;letter-spacing:-.015em;line-height:.92}
+.tusker.bold{font-family:'Archivo Black','Anton',sans-serif;letter-spacing:-.02em}
+
+/* Bayon eyebrow */
+.bayon{font-family:'Bayon',sans-serif;text-transform:uppercase;letter-spacing:.03em;line-height:1.08}
+
+/* Diamond mark (Brazil flag) */
+.dmk{display:block}
+.dmk svg{display:block;width:100%;height:100%}
+
+/* Photo card */
+.photo{background:#888;border-radius:18px;overflow:hidden;position:absolute;background-size:cover;background-position:center}
+
+/* ──────────── SLIDE 1: O BRASIL NÃO PRECISA SER REINVENTADO ──────────── */
+.s1{background:#F9F1D1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 40px}
+.s1 .stack{text-align:center;line-height:.9;color:#2B9402;font-family:'Anton','Archivo Black',sans-serif;text-transform:uppercase;letter-spacing:-.02em;font-size:230px;position:relative}
+.s1 .row{display:block;line-height:.92}
+.s1 .row.r1{margin-bottom:8px}
+.s1 .row.r3{margin-top:-20px}
+.s1 .row.r4{font-size:195px;margin-top:0}
+.s1 .nao{position:absolute;left:50%;top:165px;transform:translateX(-50%) rotate(-6deg);background:#005CE1;color:#FEBF00;padding:20px 60px 30px;font-family:'Anton','Archivo Black',sans-serif;font-size:220px;line-height:.85;letter-spacing:-.02em;text-transform:uppercase;z-index:2;white-space:nowrap}
+
+/* ──────────── SLIDE 2: ELE PRECISA SER DESCOBERTO. ──────────── */
+.s2{background:#2B9402;padding:120px 80px 0;position:relative;text-align:center}
+.s2 .dmk{width:52px;height:30px;margin:0 auto 100px;color:#FEBF00}
+.s2 .eb{font-family:'Anton','Archivo Black',sans-serif;font-size:96px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.005em;line-height:1;margin-bottom:20px}
+.s2 .eb b{font-family:'Archivo Black',sans-serif;font-weight:900;letter-spacing:-.02em}
+.s2 .big{font-family:'Anton','Archivo Black',sans-serif;font-size:230px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.02em;line-height:.9;margin-bottom:140px}
+.s2 .chair{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:340px;height:440px;color:#F9F1D1}
+.s2 .chair svg{width:100%;height:100%;color:#F9F1D1}
+
+/* ──────────── SLIDE 3: VERGONHA DE SI (strike) ──────────── */
+.s3{background:#F9F1D1;padding:140px 80px 0;text-align:center;position:relative}
+.s3 .eb{font-family:'Anton','Archivo Black',sans-serif;font-size:76px;color:#005CE1;text-transform:uppercase;letter-spacing:-.005em;line-height:1.08;margin-bottom:60px}
+.s3 .verg{display:inline-block;position:relative;font-family:'Anton','Archivo Black',sans-serif;font-size:230px;color:#2B9402;text-transform:uppercase;letter-spacing:-.02em;line-height:.92;padding:0 20px}
+.s3 .verg::after{content:"";position:absolute;left:-6px;right:-6px;top:46%;height:14px;background:#FEBF00;transform:translateY(-50%)}
+.s3 .desi{font-family:'Anton','Archivo Black',sans-serif;font-size:230px;color:#2B9402;text-transform:uppercase;letter-spacing:-.02em;line-height:.92;margin-top:8px}
+.s3 .photo{left:340px;top:1050px;width:400px;height:280px;border-radius:14px;background:linear-gradient(155deg,#7FB1D6 0%,#8EB66D 40%,#2E7A2E 100%)}
+
+/* ──────────── SLIDE 4: DOS SÍMBOLOS / DA PRÓPRIA CASA (full-bleed photo) ──────────── */
+.s4{background:linear-gradient(155deg,#A07C30 0%,#7A8F6F 55%,#2D5E69 100%);padding:0}
+.s4 .dmk{position:absolute;top:100px;left:140px;width:36px;height:22px;color:#F9F1D1}
+.s4 .head{position:absolute;top:100px;right:90px;font-family:'Anton','Archivo Black',sans-serif;font-size:112px;color:#F9F1D1;text-transform:uppercase;letter-spacing:-.005em;line-height:1.02;text-align:left}
+.s4 .head div{display:block}
+.s4 .da{position:absolute;top:630px;left:90px;font-family:'Anton','Archivo Black',sans-serif;font-size:110px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.005em}
+.s4 .prop{position:absolute;top:710px;left:80px;right:80px;font-family:'Anton','Archivo Black',sans-serif;font-size:220px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.02em;line-height:.92;text-align:center}
+.s4 .prop span{display:block}
+
+/* ──────────── SLIDE 5: ABANDONO (bottom-bleed) ──────────── */
+.s5{background:#F9F1D1;padding:0;position:relative}
+.s5 .eb{position:absolute;top:150px;left:0;right:0;font-family:'Anton','Archivo Black',sans-serif;font-size:84px;color:#005CE1;text-align:center;text-transform:uppercase;letter-spacing:-.005em;line-height:1.08}
+.s5 .mid{position:absolute;top:620px;left:0;right:0;font-family:'Anton','Archivo Black',sans-serif;font-size:84px;color:#005CE1;text-align:center;text-transform:uppercase;letter-spacing:-.005em}
+.s5 .mid .y{color:#FEBF00}
+.s5 .floor{position:absolute;bottom:-40px;left:0;right:0;font-family:'Anton','Archivo Black',sans-serif;font-size:300px;line-height:.9;color:#2B9402;text-transform:uppercase;text-align:center;letter-spacing:-.025em}
+
+/* ──────────── SLIDE 6: BRASIL (huge, green bg, photo bottom) ──────────── */
+.s6{background:#2B9402;padding:140px 60px 0;text-align:center;position:relative}
+.s6 .eb1{font-family:'Anton','Archivo Black',sans-serif;font-size:80px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.005em;line-height:1.1;margin-bottom:80px}
+.s6 .eb1 b{font-family:'Archivo Black',sans-serif;font-weight:900}
+.s6 .eb2{font-family:'Anton','Archivo Black',sans-serif;font-size:80px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.005em;line-height:1;margin-bottom:10px}
+.s6 .eb2 b{font-family:'Archivo Black',sans-serif;font-weight:900}
+.s6 .brasil{font-family:'Anton','Archivo Black',sans-serif;font-size:430px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.035em;line-height:.85;margin:0 -30px}
+.s6 .photo{left:390px;top:1100px;width:300px;height:230px;border-radius:14px;background:linear-gradient(155deg,#D98A3E 0%,#3C6B8A 70%,#2A4D6F 100%)}
+
+/* ──────────── SLIDE 7: NADA FOI DESTRUÍDO / FOI ESCONDIDO ──────────── */
+.s7{background:#F9F1D1;padding:160px 60px 0;text-align:center;position:relative}
+.s7 .top{font-family:'Anton','Archivo Black',sans-serif;font-size:190px;color:#005CE1;text-transform:uppercase;letter-spacing:-.02em;line-height:.94}
+.s7 .foi{display:inline-block;margin-top:30px;background:#2B9402;color:#FEBF00;padding:20px 60px 30px;font-family:'Anton','Archivo Black',sans-serif;font-size:170px;line-height:.88;letter-spacing:-.02em;transform:rotate(-7deg);text-transform:uppercase}
+.s7 .esc{margin-top:30px;font-family:'Anton','Archivo Black',sans-serif;font-size:210px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.02em;line-height:.9}
+.s7 .dmk{position:absolute;bottom:110px;left:50%;transform:translateX(-50%);width:46px;height:28px;color:#FEBF00}
+
+/* ──────────── SLIDE 8: ESPERANÇA / DIREÇÃO ──────────── */
+.s8{background:#005CE1;padding:180px 90px 0;text-align:center;position:relative}
+.s8 .eb{font-family:'Archivo Black',sans-serif;font-size:42px;color:#F9F1D1;line-height:1.25;font-weight:normal;text-transform:none;margin-bottom:120px}
+.s8 .l1,.s8 .l2{font-family:'Anton','Archivo Black',sans-serif;font-size:200px;color:#FEBF00;text-transform:uppercase;letter-spacing:-.02em;line-height:.98}
+.s8 .tag{margin-top:90px;font-family:'Anton','Archivo Black',sans-serif;font-size:94px;color:#F9F1D1;letter-spacing:-.005em;text-transform:uppercase;line-height:1}
+.s8 .tag b{font-family:'Archivo Black',sans-serif;color:#FEBF00;font-weight:900}
+.s8 .dmk{position:absolute;bottom:130px;left:50%;transform:translateX(-50%);width:46px;height:28px;color:#FEBF00}
+
+/* ──────────── SLIDE 9: O QUE SEMPRE ESTEVE AQUI ──────────── */
+.s9{background:#F9F1D1;padding:130px 70px 0;text-align:center;position:relative}
+.s9 .eb{font-family:'Archivo Black',sans-serif;font-size:40px;color:#005CE1;line-height:1.25;font-weight:normal;text-transform:none;margin-bottom:100px}
+.s9 .l1,.s9 .l2{font-family:'Anton','Archivo Black',sans-serif;font-size:168px;color:#2B9402;text-transform:uppercase;letter-spacing:-.02em;line-height:.95}
+.s9 .l2 .y{color:#FEBF00}
+.s9 .flip{position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);width:560px;height:560px}
+.s9 .flip img{width:100%;height:100%;object-fit:contain}
+.s9 .ph1{left:90px;top:900px;width:160px;height:160px;border-radius:12px;background:linear-gradient(155deg,#9BC3DB,#F6C858)}
+.s9 .ph2{right:90px;top:1040px;width:160px;height:160px;border-radius:12px;background:linear-gradient(155deg,#7DB6D4,#A8CB3D)}
+
+/* ──────────── SLIDE 10: ISSO NÃO É POLÍTICA / É DIREÇÃO ──────────── */
+.s10{background:#2B9402;padding:0;position:relative}
+.s10 .ph{position:absolute;top:0;left:50%;transform:translateX(-50%);width:360px;height:340px;border-radius:0 0 18px 18px;background:linear-gradient(165deg,#D9C2A4,#3B5B70 60%,#8B4A3D);overflow:hidden}
+.s10 .txt{position:absolute;top:420px;left:50px;right:50px;font-family:'Anton','Archivo Black',sans-serif;font-size:170px;color:#FEBF00;text-align:center;line-height:.95;text-transform:uppercase;letter-spacing:-.015em}
+.s10 .bar{position:absolute;bottom:130px;left:70px;right:70px;background:#FEBF00;color:#005CE1;font-family:'Anton','Archivo Black',sans-serif;font-size:178px;text-align:center;padding:45px 20px 60px;text-transform:uppercase;letter-spacing:-.02em;line-height:.96}
+
+/* ──────────── SLIDE 11: EXISTIR COM FIRMEZA ──────────── */
+.s11{background:#F9F1D1;padding:130px 60px 0;text-align:center;position:relative}
+.s11 .eb{font-family:'Anton','Archivo Black',sans-serif;font-size:70px;color:#2B9402;line-height:1.1;text-transform:uppercase;letter-spacing:-.005em;margin-bottom:80px}
+.s11 .body{font-family:'Anton','Archivo Black',sans-serif;font-size:158px;color:#2B9402;line-height:1.02;text-transform:uppercase;letter-spacing:-.02em}
+.s11 .body span{display:block}
+.s11 .body b{font-family:'Archivo Black',sans-serif;font-weight:900}
+.s11 .dmk{position:absolute;bottom:110px;left:50%;transform:translateX(-50%);width:46px;height:28px;color:#2B9402}
+
+/* ──────────── SLIDE 12: COLEÇÃO TORRES ──────────── */
+.s12{background:#005CE1;padding:150px 90px 0;text-align:center;position:relative}
+.s12 .eb{font-family:'Archivo Black',sans-serif;font-size:44px;color:#F9F1D1;line-height:1.25;font-weight:normal;text-transform:none;margin-bottom:110px}
+.s12 .wm{font-family:var(--font-display),'Coolvetica',sans-serif;font-size:140px;color:#F9F1D1;line-height:1;letter-spacing:.01em;margin-bottom:120px}
+.s12 .sub{font-family:'Bayon',sans-serif;font-size:36px;color:#F9F1D1;letter-spacing:.16em;margin-bottom:16px;text-transform:uppercase}
+.s12 .big{font-family:'Anton','Archivo Black',sans-serif;font-size:220px;color:#FEBF00;letter-spacing:-.02em;text-transform:uppercase;line-height:.9}
+.s12 .tail{font-family:'Bayon',sans-serif;font-size:32px;color:#F9F1D1;letter-spacing:.18em;margin-top:40px;text-transform:uppercase}
+.s12 .flips{position:absolute;bottom:0;left:0;right:0;height:280px;display:flex;align-items:flex-end;justify-content:center;gap:-12px}
+.s12 .flips img{width:22%;object-fit:contain;transform:rotate(180deg);margin:0 -2%}
+.s12 .flips img:nth-child(1){transform:rotate(180deg) translateY(20px)}
+.s12 .flips img:nth-child(2){transform:rotate(180deg) translateY(8px)}
+.s12 .flips img:nth-child(4){transform:rotate(180deg) translateY(8px)}
+.s12 .flips img:nth-child(5){transform:rotate(180deg) translateY(20px)}
+
+/* ═════════ STORIES ═════════ */
+.stories-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:24px;margin-top:16px}
+.story-frame{position:relative;aspect-ratio:9/16;background:#000;border-radius:20px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.story-wrap{width:1080px;height:1920px;position:absolute;inset:0;transform-origin:0 0;transform:scale(calc(240/1080));overflow:hidden}
+.story-hud{position:absolute;top:12px;left:12px;right:12px;z-index:5;display:flex;gap:3px}
+.story-hud div{flex:1;height:2px;background:rgba(255,255,255,.3);border-radius:2px;overflow:hidden}
+.story-hud div.on{background:#fff}
+.story-user{position:absolute;top:26px;left:14px;z-index:5;display:flex;align-items:center;gap:8px;color:#fff;font-size:11px;font-weight:600}
+.story-user .av{width:22px;height:22px;border-radius:50%;background:#F9F1D1;border:1.5px solid #fff;display:flex;align-items:center;justify-content:center}
+.story-user .av svg{width:14px;height:8px;color:#2B9402}
+
+.st-1{width:1080px;height:1920px;background:#2B9402;padding:400px 80px 0;text-align:center;position:relative;font-family:'Anton','Archivo Black',sans-serif}
+.st-1 .dmk{position:absolute;top:180px;left:50%;transform:translateX(-50%);width:80px;height:48px;color:#FEBF00}
+.st-1 .eye{font-size:80px;color:#FEBF00;letter-spacing:-.005em;text-transform:uppercase;margin-bottom:30px;line-height:1}
+.st-1 .huge{font-size:300px;color:#FEBF00;letter-spacing:-.02em;line-height:.88;text-transform:uppercase}
+.st-1 .tape{position:absolute;bottom:420px;left:70px;right:70px;background:#FEBF00;color:#2B9402;padding:50px 30px;transform:rotate(-2.5deg);font-size:68px;letter-spacing:-.005em;text-transform:uppercase;line-height:1.05}
+
+.st-2{width:1080px;height:1920px;background:#005CE1;padding:430px 80px 0;text-align:center;position:relative;font-family:'Anton','Archivo Black',sans-serif}
+.st-2 .dmk{position:absolute;top:190px;left:50%;transform:translateX(-50%);width:92px;height:56px;color:#FEBF00}
+.st-2 .q{font-family:'Archivo Black',sans-serif;font-weight:normal;font-size:68px;color:#F9F1D1;line-height:1.2;text-transform:none;margin-bottom:130px}
+.st-2 .big{font-size:260px;color:#FEBF00;letter-spacing:-.02em;line-height:.88;text-transform:uppercase}
+.st-2 .cta{position:absolute;bottom:260px;left:50%;transform:translateX(-50%);background:#FEBF00;color:#005CE1;padding:36px 90px;font-family:'Anton','Archivo Black',sans-serif;font-size:70px;letter-spacing:-.005em;border-radius:100px;text-transform:uppercase}
+
+.st-3{width:1080px;height:1920px;background:#F9F1D1;padding:330px 80px 0;text-align:center;position:relative;font-family:'Anton','Archivo Black',sans-serif}
+.st-3 .dmk{position:absolute;top:170px;left:50%;transform:translateX(-50%);width:80px;height:48px;color:#2B9402}
+.st-3 .eye{font-size:74px;color:#005CE1;letter-spacing:-.005em;text-transform:uppercase;margin-bottom:40px;line-height:1}
+.st-3 .huge{font-size:230px;color:#2B9402;letter-spacing:-.02em;line-height:.9;text-transform:uppercase}
+.st-3 img{position:absolute;bottom:160px;left:50%;transform:translateX(-50%);width:72%}
+</style></head><body>
+
+<div class="wrap">
+<div class="hero">
+  <h1>instagram kit</h1>
+  <div class="lbl">@usepedireito__ · 1080×1350 feed · 1080×1920 story · diagramação fiel aos carrosséis 01–12</div>
+</div>
+
+<div class="sec-head">Carrossel manifesto · "vergonha de si → pé direito"</div>
+<div class="sec-sub">12 slides · Tusker Grotesk-substitute type (Anton condensed, tracking -2%) · diagramação seguindo referências</div>
+
+<div class="device">
+  <div class="post-head">
+    <div class="post-avatar"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+    <div class="post-user">usepedireito__<svg class="verified" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 2.4 3.4-.4.4 3.4L20.6 10 19.2 12l1.4 2-2.4 2.4-.4 3.4-3.4-.4L12 22l-2.4-2.4-3.4.4-.4-3.4L3.4 14l1.4-2-1.4-2 2.4-2.4.4-3.4 3.4.4zM10 15l5-5-1.4-1.4L10 12.2l-1.6-1.6L7 12z"/></svg></div>
+    <div class="post-more">···</div>
+  </div>
+
+  <div class="carousel" id="carousel">
+    <span class="page-chip" id="pageChip">1/12</span>
+    <button class="nav-btn prev" id="prevBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="nav-btn next" id="nextBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+
+    <div class="track" id="track">
+
+      <!-- SLIDE 1 -->
+      <div class="slide-holder"><div class="slide s1">
+        <div class="stack">
+          <span class="row r1">O BRASIL</span>
+          <span class="row r2" style="visibility:hidden">NÃO</span>
+          <span class="row r3">PRECISA SER</span>
+          <span class="row r4">REINVENTADO</span>
+          <span class="nao">NÃO</span>
+        </div>
+      </div></div>
+
+      <!-- SLIDE 2 -->
+      <div class="slide-holder"><div class="slide s2">
+        <div class="dmk"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+        <div class="eb">ELE <b>PRECISA</b> SER</div>
+        <div class="big">DESCOBERTO.</div>
+        <div class="chair"><svg viewBox="0 0 340 440" fill="currentColor">
+          <rect x="90" y="60" width="160" height="110" rx="10"/>
+          <rect x="90" y="200" width="160" height="20" rx="4"/>
+          <rect x="82" y="215" width="176" height="35" rx="4"/>
+          <rect x="100" y="250" width="16" height="180"/>
+          <rect x="224" y="250" width="16" height="180"/>
+          <rect x="60" y="250" width="12" height="180" transform="rotate(10 66 340)"/>
+          <rect x="268" y="250" width="12" height="180" transform="rotate(-10 274 340)"/>
+          <rect x="80" y="420" width="180" height="14" rx="4"/>
+        </svg></div>
+      </div></div>
+
+      <!-- SLIDE 3 -->
+      <div class="slide-holder"><div class="slide s3">
+        <div class="eb">Durante anos,<br>o brasileiro foi<br>ensinado a ter</div>
+        <div style="white-space:nowrap"><span class="verg">VERGONHA</span></div>
+        <div class="desi">DE SI.</div>
+        <div class="photo" style="left:340px;top:1050px;width:400px;height:260px;border-radius:14px"></div>
+      </div></div>
+
+      <!-- SLIDE 4 -->
+      <div class="slide-holder"><div class="slide s4">
+        <div class="dmk"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+        <div class="head">
+          <div>DOS</div>
+          <div>SÍMBOLOS.</div>
+          <div>DA FÉ.</div>
+          <div>DA TRADIÇÃO.</div>
+        </div>
+        <div class="da">DA</div>
+        <div class="prop"><span>PRÓPRIA</span><span>CASA.</span></div>
+      </div></div>
+
+      <!-- SLIDE 5 -->
+      <div class="slide-holder"><div class="slide s5">
+        <div class="eb">Chamaram esse<br>vazio de progresso.</div>
+        <div class="mid">Mas era <span class="y">SÓ</span></div>
+        <div class="floor">ABANDONO</div>
+      </div></div>
+
+      <!-- SLIDE 6 -->
+      <div class="slide-holder"><div class="slide s6">
+        <div class="eb1">O BRASILEIRO NÃO<br><b>ESTÁ</b> PERDIDO.</div>
+        <div class="eb2">ESTÁ <b>ÓRFÃO</b> DO</div>
+        <div class="brasil">BRASIL</div>
+        <div class="photo" style="left:390px;top:1100px;width:300px;height:230px;border-radius:14px"></div>
+      </div></div>
+
+      <!-- SLIDE 7 -->
+      <div class="slide-holder"><div class="slide s7">
+        <div class="top">NADA FOI<br>DESTRUÍDO.</div>
+        <span class="foi">FOI</span>
+        <div class="esc">ESCONDIDO</div>
+        <div class="dmk"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+      </div></div>
+
+      <!-- SLIDE 8 -->
+      <div class="slide-holder"><div class="slide s8">
+        <div class="eb">Entrar com o pé direito<br>sempre foi sobre isso:</div>
+        <div class="l1">ESPERANÇA</div>
+        <div class="l2">DIREÇÃO</div>
+        <div class="tag">COMEÇO <b>DIGNO</b></div>
+        <div class="dmk"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+      </div></div>
+
+      <!-- SLIDE 9 -->
+      <div class="slide-holder"><div class="slide s9">
+        <div class="eb">A Pé Direito não cria um<br>Brasil novo. Ela revela</div>
+        <div class="l1">O QUE SEMPRE</div>
+        <div class="l2">ES<span class="y">TE</span>VE <span class="y">AQ</span>UI</div>
+        <div class="flip"><img src="../../assets/product-amarelo.png" alt=""></div>
+        <div class="photo ph1"></div>
+        <div class="photo ph2"></div>
+      </div></div>
+
+      <!-- SLIDE 10 -->
+      <div class="slide-holder"><div class="slide s10">
+        <div class="ph"></div>
+        <div class="txt">ISSO NÃO É<br>POLÍTICA.</div>
+        <div class="bar">É DIREÇÃO.</div>
+      </div></div>
+
+      <!-- SLIDE 11 -->
+      <div class="slide-holder"><div class="slide s11">
+        <div class="eb">Quando te fazem acreditar<br>que sua origem é erro,</div>
+        <div class="body">
+          <span>EX<b>IS</b>TIR</span>
+          <span>COM FIRMEZA</span>
+          <span>VIRA <b>ATO</b> DE</span>
+          <span>LIBERDADE.</span>
+        </div>
+        <div class="dmk"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+      </div></div>
+
+      <!-- SLIDE 12 -->
+      <div class="slide-holder"><div class="slide s12">
+        <div class="eb">Quem reconhece, entra.<br>Quem sente, pisa.</div>
+        <div class="wm">PéDireito</div>
+        <div class="sub">COLEÇÃO</div>
+        <div class="big">TORRES</div>
+        <div class="tail">ÚLTIMAS UNIDADES</div>
+        <div class="flips">
+          <img src="../../assets/product-verde.png">
+          <img src="../../assets/product-branco.png">
+          <img src="../../assets/product-amarelo.png">
+          <img src="../../assets/product-azul.png">
+          <img src="../../assets/product-verde.png">
+        </div>
+      </div></div>
+
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+
+  <div class="post-actions">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3C14.76 3 13.09 3.81 12 5.09C10.91 3.81 9.24 3 7.5 3C4.42 3 2 5.42 2 8.5C2 12.28 5.4 15.36 10.55 20.04L12 21.35L13.45 20.03C18.6 15.36 22 12.28 22 8.5C22 5.42 19.58 3 16.5 3Z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+    <svg class="right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+  </div>
+  <div class="post-likes">28.483 curtidas</div>
+  <div class="post-caption"><b>usepedireito__</b>a pé direito não cria um brasil novo. ela revela o que sempre esteve aqui. <span class="hash">#usepédireito</span></div>
+  <div class="post-time">há 6 horas</div>
+</div>
+
+<div class="sec-head">Stories · 1080×1920</div>
+<div class="sec-sub">Launch, manifest, product spotlight</div>
+
+<div class="stories-row">
+  <div class="story-frame">
+    <div class="story-hud"><div class="on" style="flex:.6"></div><div></div><div></div></div>
+    <div class="story-user"><div class="av"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div><span>usepedireito__</span></div>
+    <div class="story-wrap"><div class="st-1">
+      <div class="dmk"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+      <div class="eye">A venda está</div>
+      <div class="huge">LIBERADA</div>
+      <div class="tape">DIA 07 · 00H00<br>USEPEDIREITO.COM.BR</div>
+    </div></div>
+  </div>
+
+  <div class="story-frame">
+    <div class="story-hud"><div></div><div class="on"></div><div></div></div>
+    <div class="story-user"><div class="av"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div><span>usepedireito__</span></div>
+    <div class="story-wrap"><div class="st-2">
+      <div class="dmk"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+      <div class="q">Quem reconhece, entra.<br>Quem sente, pisa.</div>
+      <div class="big">PÉ<br>DIREITO.</div>
+      <div class="cta">SAIBA MAIS</div>
+    </div></div>
+  </div>
+
+  <div class="story-frame">
+    <div class="story-hud"><div></div><div></div><div class="on" style="flex:.3"></div></div>
+    <div class="story-user"><div class="av"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div><span>usepedireito__</span></div>
+    <div class="story-wrap"><div class="st-3">
+      <div class="dmk"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg></div>
+      <div class="eye">Coleção Torres</div>
+      <div class="huge">ÚLTIMAS<br>UNIDADES</div>
+      <img src="../../assets/product-verde.png" alt="">
+    </div></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  const track=document.getElementById('track');
+  const chip=document.getElementById('pageChip');
+  const dots=document.getElementById('dots');
+  const prev=document.getElementById('prevBtn');
+  const next=document.getElementById('nextBtn');
+  const total=track.children.length;
+  let cur=0;
+  for(let i=0;i<total;i++){
+    const d=document.createElement('span');
+    if(i===0)d.classList.add('on');
+    d.addEventListener('click',()=>go(i));
+    dots.appendChild(d);
+  }
+  function go(i){
+    cur=Math.max(0,Math.min(total-1,i));
+    track.style.transform=`translateX(-${cur*100}%)`;
+    chip.textContent=`${cur+1}/${total}`;
+    [...dots.children].forEach((d,idx)=>d.classList.toggle('on',idx===cur));
+    prev.disabled=cur===0;
+    next.disabled=cur===total-1;
+  }
+  prev.addEventListener('click',()=>go(cur-1));
+  next.addEventListener('click',()=>go(cur+1));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft')go(cur-1);
+    if(e.key==='ArrowRight')go(cur+1);
+  });
+  go(0);
+})();
+</script>
+</body></html>

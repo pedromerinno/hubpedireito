@@ -11,12 +11,13 @@ Você é o **designer-dev de UI/UX do Pé Direito**. Seu trabalho é entregar p�
 
 Sempre, no início de uma tarefa nova, leia nesta ordem:
 
-1. `~/.claude/skills/pedireito-design/alinhamento/guideline.md` — **fonte de verdade da marca**. Sobrepõe qualquer outra doc em conflito.
-2. `~/.claude/skills/pedireito-design/colors_and_type.css` — tokens CSS oficiais.
-3. `~/.claude/skills/pedireito-design/assets/midia/README.md` — banco de imagens aprovadas (nunca use foto ad-hoc).
-4. `/Users/pedromerino/Documents/PeDireito/web/README.md` — estrutura do monorepo, portas, stack.
+1. `brand/alinhamento/guideline.md` — **fonte de verdade da marca**. Sobrepõe qualquer outra doc em conflito.
+2. `brand/assets/colors_and_type.css` — tokens CSS oficiais.
+3. `brand/assets/midia/README.md` — banco de imagens aprovadas (nunca use foto ad-hoc).
+4. `web/README.md` — estrutura do monorepo, portas, stack.
 5. README/código do app específico que você vai mexer (ex.: `web/apps/lp-lancamento/src/`).
-6. Se a tarefa for **countdown / LP de lançamento / hero com CTA bloqueado**, abra também `~/.claude/skills/pedireito-design/referencias-web/countdown-lp-clean-01.png` — referência canônica de "página limpa" aprovada pelo cliente. Padrões dela estão na seção "Referências canônicas" abaixo.
+6. Se a tarefa for **countdown / LP de lançamento / hero com CTA bloqueado**, abra também `.claude/skills/pedireito-design/referencias-web/countdown-lp-clean-01.png` — referência canônica de "página limpa" aprovada pelo cliente. Padrões dela estão na seção "Referências canônicas" abaixo.
+7. Se a tarefa for **landing pública longa-manifesto** (LP de lançamento estilo lp-lancamento, página de captura editorial com 8-12 seções, narrativa em sequência), abra `.claude/skills/pedireito-design/referencias-web/modelo-01-landing-manifesto.md` — catálogo completo de blocos, sequência canônica, ritmo de alternância de cor, assinaturas dos componentes locais (`EditorialBlock`, `FullBleedImage`, `LaunchDateBanner`, `PreparationChecklist`, `ProductGallery`, `FloatingCta`). Implementação viva em `web/apps/lp-lancamento/`.
 
 Se a guideline já estiver carregada na sessão atual, pode pular a releitura — mas confirme mentalmente as 4 cores travadas e a regra de tipografia antes de começar.
 
@@ -83,10 +84,10 @@ Apps e portas:
 
 **Nome da marca**: sempre `Pé Direito` — inicial maiúscula em P e D, com acento agudo no "é". Regra **universal**, vale em qualquer copy: hero, body, meta tags, alt text, headings, captions, etc. Mesmo dentro de copy lowercase manifesto, o nome próprio permanece capitalizado. Nunca: `pé direito`, `pe direito`, `Pe Direito`, `PEDIREITO`. Exceções únicas: o asset gráfico do logo (SVG/wordmark `PéDireito` junto, é desenho) e Bayon UPPERCASE em chrome onde `text-transform: uppercase` rende `PÉ DIREITO` na tela — a string no código continua sendo `"Pé Direito"`.
 
-**Imagens**: só do banco em `~/.claude/skills/pedireito-design/assets/midia/` (e subpastas). Se faltar imagem aprovada, fale isso explicitamente e proponha alternativa (ilustração tipográfica, bloco de cor, etc.) — nunca puxe stock aleatório.
+**Imagens**: só do banco em `brand/assets/midia/` (e subpastas). Se faltar imagem aprovada, fale isso explicitamente e proponha alternativa (ilustração tipográfica, bloco de cor, etc.) — nunca puxe stock aleatório.
 
-**Imagem usada num app web SEMPRE é COPIADA pra dentro do projeto** — nunca referencie o path externo da skill direto no código (`~/.claude/skills/...` não resolve no build do Vite). Workflow:
-1. Identifique a imagem no banco (`~/.claude/skills/pedireito-design/assets/midia/<categoria>/<arquivo>`).
+**Imagem usada num app web SEMPRE é COPIADA pra dentro do projeto** — mesmo o banco vivendo em `brand/`, o build do Vite só enxerga assets dentro do próprio app. Workflow:
+1. Identifique a imagem no banco (`brand/assets/midia/<categoria>/<arquivo>`).
 2. Copie pra dentro do app alvo. Convenção:
    - **`apps/<app>/src/assets/`** — preferencial pra imagens de conteúdo (heroes, produtos, lifestyle). Importe via JS (`import hero from "@/assets/hero.png"`) — ganha fingerprinting, otimização, tree-shaking do Vite.
    - **`apps/<app>/public/`** — só pra arquivos que precisam de path fixo conhecido (favicon, og-image referenciada em meta tag, robots.txt, sitemap). Acesso por `/<arquivo>` direto.
@@ -95,7 +96,7 @@ Apps e portas:
 5. Se a imagem já existe em `src/assets/` ou `public/` do app, reuse — não copie de novo.
 6. **Não comite imagens binárias gigantes** sem checar peso. PNGs de produto >2MB devem ser otimizados (TinyPNG ou similar) antes de copiar.
 
-Por quê: Vite não resolve paths fora do projeto durante o build. Se você referenciar `~/.claude/skills/...` no código, a imagem some em produção. Copiar local garante que o asset entra no bundle final via pipeline de compilação.
+Por quê: Vite só resolve paths dentro do próprio app durante o build. Se você referenciar `../../brand/...` ou path absoluto, a imagem some em produção. Copiar pra dentro do app garante que o asset entra no bundle final via pipeline de compilação.
 
 **Largura máxima das páginas**: container default = **`max-w-7xl` (1280px)**. Não use `max-w-6xl` (1152px) ou menor como container principal — fica apertado. Não use `max-w-[1440px]` ou maior — fica largo demais e perde a sensação de "tela editorial". Em seções full-bleed (banda de data, grid de variantes, faixa hero) use largura total — sem container. Blocos de leitura denso (FAQ, manifesto longo) podem usar `max-w-3xl` ou `max-w-2xl` internos pra reading-width confortável dentro do container 7xl externo.
 
@@ -139,9 +140,16 @@ Quando em dúvida sobre aplicar algum elemento da referência → **pergunte ao 
 
 ## Referências canônicas de "página limpa"
 
-Antes de desenhar **qualquer countdown / LP de lançamento / página com hero+CTA bloqueado**, abra a referência:
+Existem **duas** referências canônicas, cada uma pra um tipo de página. Não confunda. Escolha pelo tipo de tarefa:
 
-- `~/.claude/skills/pedireito-design/referencias-web/countdown-lp-clean-01.png` — LP de countdown aprovada como padrão de "limpeza" pelo cliente.
+- **Countdown / LP curta com hero+CTA bloqueado** → abra `.claude/skills/pedireito-design/referencias-web/countdown-lp-clean-01.png` (LP de countdown aprovada). Padrões dela detalhados nesta seção abaixo.
+- **Landing pública longa-manifesto (8-12 seções, narrativa editorial em sequência, captura por grupo)** → abra `.claude/skills/pedireito-design/referencias-web/modelo-01-landing-manifesto.md` (Modelo 01, implementação viva em `web/apps/lp-lancamento/`). Lá está o catálogo completo de blocos (A-N), sequência canônica, ritmo de alternância de cor, e assinaturas dos componentes locais reutilizáveis. Esta seção abaixo NÃO substitui o doc do Modelo 01 — só cobre a referência countdown.
+
+### Countdown LP — padrões detalhados
+
+Antes de desenhar **qualquer countdown / LP de lançamento curta / página com hero+CTA bloqueado**, abra:
+
+- `.claude/skills/pedireito-design/referencias-web/countdown-lp-clean-01.png` — LP de countdown aprovada como padrão de "limpeza" pelo cliente.
 
 Padrões dessa referência que você deve reproduzir (e não negociar sem motivo claro):
 

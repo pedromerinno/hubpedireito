@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Pé Direito — Site Kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#E8E3C6;font-family:'Inter',sans-serif;color:#2B9402}
+body{padding:40px 20px 120px}
+.wrap{max-width:500px;margin:0 auto;background:transparent}
+.lbl{font-family:var(--font-narrow);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#2B9402;opacity:.7;text-align:center;margin-bottom:18px}
+
+/* The phone-ish canvas */
+.site{width:500px;margin:0 auto;box-shadow:0 6px 40px rgba(0,0,0,.15);overflow:hidden}
+
+/* ─── HERO · yellow ─── */
+.hero{background:#FEBF00;padding:28px 32px 32px;position:relative;text-align:center}
+.hero .topbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:36px}
+.hero .diamond{width:18px;height:12px;color:#F9F1D1}
+.hero .wordmark{font-family:'Coolvetica',var(--font-display);font-size:22px;color:#F9F1D1;letter-spacing:.01em;line-height:1}
+.hero-flipflop{width:260px;height:120px;margin:0 auto 20px;position:relative}
+.hero-flipflop svg{width:100%;height:100%;display:block}
+
+/* Countdown */
+.countdown{display:flex;justify-content:center;align-items:baseline;gap:6px;font-family:'Bayon',sans-serif;color:#2B9402;margin-bottom:10px}
+.countdown .n{font-size:60px;line-height:.8;letter-spacing:.02em;min-width:60px;text-align:center}
+.countdown .c{font-size:52px;line-height:.8;color:#2B9402;transform:translateY(-4px)}
+.countdown-lbls{display:flex;justify-content:center;gap:30px;font-family:var(--font-narrow);font-size:10px;letter-spacing:.2em;color:#2B9402;text-transform:uppercase;margin-bottom:22px}
+.countdown-lbls span{min-width:44px;text-align:center;font-weight:bold}
+
+/* Black CTA pill */
+.pill{display:inline-flex;align-items:center;gap:8px;background:#000;color:#F9F1D1;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;padding:10px 20px;border-radius:100px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;border:none;transition:opacity .15s}
+.pill:hover{opacity:.85}
+.pill.small{font-size:10px;padding:9px 18px}
+.pill .bell{width:12px;height:12px}
+.hero-note{font-family:'Inter',sans-serif;font-size:9px;color:#2B9402;margin-top:10px;font-weight:500}
+
+/* ─── BLUE BAND ─── */
+.blue-band{background:#005CE1;color:#FEBF00;padding:22px 20px;display:flex;align-items:center;justify-content:center;gap:14px;font-family:'Bayon',sans-serif;font-size:40px;letter-spacing:.02em;text-transform:uppercase;line-height:.9}
+.blue-band .knock{background:#FEBF00;color:#005CE1;padding:4px 10px 8px;display:inline-block}
+
+/* ─── CREAM SECTION ─── */
+.cream{background:#F2EFE0;padding:36px 28px}
+.eyebrow-pill{display:inline-block;background:#F9F1D1;color:#2B9402;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:8px 18px;border-radius:100px;margin-bottom:18px}
+.cream .center{text-align:center}
+
+/* Checklist cards */
+.check-list{display:flex;flex-direction:column;gap:10px;margin:6px 0 32px}
+.check{background:#2B9402;color:#F9F1D1;padding:14px 16px;border-radius:12px;display:flex;align-items:center;gap:12px;font-family:'Inter',sans-serif;font-size:12px;line-height:1.3}
+.check .box{width:20px;height:20px;border:2px solid #FEBF00;border-radius:4px;flex-shrink:0;position:relative}
+.check.done .box{background:#FEBF00}
+.check.done .box::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#2B9402;font-weight:900;font-size:13px}
+
+/* Urgency cards */
+.urgency-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 24px}
+.urg{background:#005CE1;color:#F9F1D1;padding:18px 16px 20px;border-radius:14px;min-height:150px;display:flex;flex-direction:column}
+.urg .ic{width:28px;height:28px;border-radius:50%;background:#FEBF00;display:flex;align-items:center;justify-content:center;margin-bottom:auto}
+.urg .ic svg{width:16px;height:16px;color:#005CE1}
+.urg .copy{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;line-height:1.3;margin-top:28px}
+
+.cream-cta{text-align:center;margin:20px 0 0}
+
+/* ─── PRODUCT STRIP ─── */
+.product-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;height:180px}
+.product-strip .p{display:flex;align-items:center;justify-content:center;overflow:hidden}
+.product-strip .p img{width:72%;object-fit:contain}
+.p-verde{background:#2B9402}
+.p-amarelo{background:#FEBF00}
+.p-branco{background:#F9F1D1}
+.p-azul{background:#3498db}
+
+/* ─── FOOTER ─── */
+footer{background:#1B6200;color:#F9F1D1;padding:24px 32px 28px;text-align:center;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.06em}
+footer .links{display:flex;justify-content:center;gap:28px;font-family:'Bayon',sans-serif;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+footer .meta{opacity:.75;font-size:9px}
+
+/* ─── Variants panel ─── */
+.variants{max-width:500px;margin:40px auto 0}
+.sec-head{font-family:'Coolvetica',var(--font-display);font-size:22px;color:#2B9402;margin:0 0 14px;text-align:center}
+
+.tabs{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.tab{font-family:'Bayon',sans-serif;font-size:12px;letter-spacing:.16em;padding:6px 12px;cursor:pointer;border:none;background:transparent;color:#2B9402;border-bottom:2px solid transparent;text-transform:uppercase}
+.tab.on{border-bottom-color:#FEBF00;color:#005CE1}
+</style></head><body>
+
+<div class="wrap">
+<div class="lbl">usepedireito.com.br · countdown landing · mobile</div>
+
+<div class="site">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="topbar">
+      <svg class="diamond" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg>
+      <span class="wordmark">PéDireito</span>
+    </div>
+
+    <div class="hero-flipflop">
+      <img src="../../assets/product-amarelo.png" alt="" style="width:100%;height:100%;object-fit:contain">
+    </div>
+
+    <div class="countdown">
+      <span class="n" id="d">01</span><span class="c">:</span>
+      <span class="n" id="h">23</span><span class="c">:</span>
+      <span class="n" id="m">12</span><span class="c">:</span>
+      <span class="n" id="s">08</span>
+    </div>
+    <div class="countdown-lbls">
+      <span>DIAS</span><span>HORAS</span><span>MIN</span><span>SEG</span>
+    </div>
+
+    <button class="pill">
+      <svg class="bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      CARRINHO ABRE SEGUNDA, 9H
+    </button>
+    <div class="hero-note">Este site ficará ativo no horário de abertura</div>
+  </section>
+
+  <!-- BLUE BAND -->
+  <div class="blue-band">
+    <span>ÁS 9H</span>
+    <span style="color:#FEBF00">02</span>
+    <span class="knock">FEV</span>
+    <span>ÁS 9H</span>
+  </div>
+
+  <!-- CREAM SECTION -->
+  <section class="cream">
+    <div class="center">
+      <div class="eyebrow-pill">O que fazer agora:</div>
+    </div>
+
+    <div class="check-list">
+      <div class="check done"><div class="box"></div><span>Salve esta página nos favoritos</span></div>
+      <div class="check"><div class="box"></div><span>Coloque um alarme para segunda às 8h55</span></div>
+      <div class="check"><div class="box"></div><span>Esteja nesse site 5 minutos antes do lançamento para clicar no link de abertura</span></div>
+      <div class="check"><div class="box"></div><span>Tenha seus dados de pagamento prontos</span></div>
+    </div>
+
+    <div class="center">
+      <div class="eyebrow-pill">Por que a urgência é real</div>
+    </div>
+
+    <div class="urgency-grid">
+      <div class="urg">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+        <div class="copy">São apenas 10 mil pares no primeiro lote</div>
+      </div>
+      <div class="urg">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="copy">Mais de 50.000 pessoas aguardando</div>
+      </div>
+    </div>
+
+    <div class="cream-cta">
+      <button class="pill small">ENTRAR NA LISTA DE ESPERA</button>
+    </div>
+  </section>
+
+  <!-- PRODUCT STRIP -->
+  <div class="product-strip">
+    <div class="p p-amarelo"><img src="../../assets/product-amarelo.png" alt=""></div>
+    <div class="p p-azul"><img src="../../assets/product-azul.png" alt=""></div>
+    <div class="p p-branco"><img src="../../assets/product-branco.png" alt=""></div>
+    <div class="p p-verde"><img src="../../assets/product-verde.png" alt=""></div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="links"><span>HOME</span><span>FAQ</span><span>SUPORTE</span></div>
+    <div class="meta">horário de brasília. sem prorrogação.</div>
+  </footer>
+
+</div>
+
+<!-- Variant examples -->
+<div class="variants">
+  <div class="sec-head">variants de estado</div>
+  <div class="lbl" style="text-align:center;margin-bottom:20px">pre-launch · launch ao vivo · checkout</div>
+</div>
+
+<div class="site" style="margin-top:18px">
+  <section class="hero" style="background:#2B9402">
+    <div class="topbar">
+      <svg class="diamond" viewBox="0 0 497 280" fill="#FEBF00"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg>
+      <span class="wordmark" style="color:#FEBF00">PéDireito</span>
+    </div>
+    <div style="font-family:'Archivo Black','Anton',sans-serif;font-size:68px;color:#FEBF00;text-transform:uppercase;line-height:.95;letter-spacing:-.01em;margin:10px 0 8px">AO VIVO.</div>
+    <div style="font-family:'Bayon',sans-serif;font-size:18px;color:#F9F1D1;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px">CARRINHO ABERTO — 10MIL PARES DISPONÍVEIS</div>
+
+    <div style="background:#FEBF00;color:#2B9402;padding:14px 20px;border-radius:100px;display:inline-flex;align-items:center;gap:10px;font-family:'Bayon',sans-serif;font-size:14px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer">COMPRAR AGORA →</div>
+
+    <div style="margin-top:18px;display:flex;justify-content:center;gap:8px;font-family:'Inter',sans-serif;font-size:10px;color:#F9F1D1">
+      <span style="width:8px;height:8px;border-radius:50%;background:#ED4956;animation:pulse 1.2s infinite"></span>
+      8.240 pessoas comprando agora
+    </div>
+  </section>
+
+  <div class="product-strip" style="height:220px">
+    <div class="p p-amarelo" style="flex-direction:column;gap:6px;padding:16px">
+      <img src="../../assets/product-amarelo.png" style="width:80%;height:110px;object-fit:contain">
+      <div style="font-family:'Bayon',sans-serif;font-size:11px;color:#2B9402;letter-spacing:.12em">AMARELO</div>
+      <div style="font-family:'Archivo Black','Anton',sans-serif;font-size:16px;color:#005CE1;line-height:.9">R$89</div>
+    </div>
+    <div class="p p-azul" style="flex-direction:column;gap:6px;padding:16px">
+      <img src="../../assets/product-azul.png" style="width:80%;height:110px;object-fit:contain">
+      <div style="font-family:'Bayon',sans-serif;font-size:11px;color:#FEBF00;letter-spacing:.12em">AZUL</div>
+      <div style="font-family:'Archivo Black','Anton',sans-serif;font-size:16px;color:#FEBF00;line-height:.9">R$89</div>
+    </div>
+    <div class="p p-branco" style="flex-direction:column;gap:6px;padding:16px">
+      <img src="../../assets/product-branco.png" style="width:80%;height:110px;object-fit:contain">
+      <div style="font-family:'Bayon',sans-serif;font-size:11px;color:#2B9402;letter-spacing:.12em">BRANCO</div>
+      <div style="font-family:'Archivo Black','Anton',sans-serif;font-size:16px;color:#2B9402;line-height:.9">R$89</div>
+    </div>
+    <div class="p p-verde" style="flex-direction:column;gap:6px;padding:16px">
+      <img src="../../assets/product-verde.png" style="width:80%;height:110px;object-fit:contain">
+      <div style="font-family:'Bayon',sans-serif;font-size:11px;color:#FEBF00;letter-spacing:.12em">VERDE</div>
+      <div style="font-family:'Archivo Black','Anton',sans-serif;font-size:16px;color:#FEBF00;line-height:.9">R$89</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}</style>
+
+<script>
+// Live countdown
+(function(){
+  const d = document.getElementById('d');
+  const h = document.getElementById('h');
+  const m = document.getElementById('m');
+  const s = document.getElementById('s');
+  // target = now + 1d 23h 12m 8s
+  const end = Date.now() + (1*86400 + 23*3600 + 12*60 + 8)*1000;
+  function tick(){
+    let diff = Math.max(0, Math.floor((end - Date.now())/1000));
+    const dd = Math.floor(diff/86400); diff -= dd*86400;
+    const hh = Math.floor(diff/3600); diff -= hh*3600;
+    const mm = Math.floor(diff/60); const ss = diff-mm*60;
+    d.textContent = String(dd).padStart(2,'0');
+    h.textContent = String(hh).padStart(2,'0');
+    m.textContent = String(mm).padStart(2,'0');
+    s.textContent = String(ss).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 1000);
+})();
+
+// Checklist interaction
+document.querySelectorAll('.check').forEach(el=>{
+  el.addEventListener('click', ()=>el.classList.toggle('done'));
+});
+</script>
+
+</body></html>

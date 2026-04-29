@@ -1,0 +1,347 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Pé Direito — ADS Kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:56px 48px;background:#F6F6E5;color:#2B9402;font-family:'Inter',sans-serif;min-height:100vh}
+.wrap{max-width:1600px;margin:0 auto}
+.hero{padding:4px 0 28px;border-bottom:2px solid #FEBF00;margin-bottom:40px}
+h1{font-family:var(--font-display);font-size:48px;color:#2B9402;margin:0 0 8px;text-transform:lowercase;font-weight:normal;letter-spacing:.01em}
+.lbl{font-family:var(--font-narrow);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#2B9402;opacity:.7}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:32px;border-bottom:1px solid rgba(0,0,0,.15)}
+.tab{font-family:'Bayon',sans-serif;font-size:22px;letter-spacing:.1em;text-transform:uppercase;padding:14px 24px;cursor:pointer;border:none;background:transparent;color:#2B9402;border-bottom:3px solid transparent;transition:all .15s}
+.tab:hover{color:#005CE1}
+.tab.on{color:#005CE1;border-bottom-color:#FEBF00}
+
+.sec-head{font-family:var(--font-display);font-size:32px;color:#005CE1;margin:0 0 6px;text-transform:lowercase;font-weight:normal}
+.sec-sub{font-family:var(--font-narrow);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#2B9402;margin-bottom:24px;opacity:.7}
+
+/* Grid of 1080×1350 canvases */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;margin-bottom:60px}
+.item{display:flex;flex-direction:column;gap:10px}
+.canvas{background:#eee;overflow:hidden;aspect-ratio:1080/1350;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.canvas>.scale{position:absolute;inset:0;transform-origin:0 0}
+.item .lbl{padding:0 2px}
+
+/* ──────────────────────── AD CANVAS ───────────────────────── */
+.ad{width:1080px;height:1350px;position:relative;overflow:hidden;font-family:var(--font-display)}
+
+/* Background fields */
+.bg-verde    {background:#2B9402}
+.bg-verdeEsc {background:#1B6200}
+.bg-amarelo  {background:#FEBF00}
+.bg-azul     {background:#005CE1}
+.bg-creme    {background:#F9F1D1}
+
+/* Shoe silhouette behind — PD_Verde3 style (yellow inner, blue strap) */
+.shoe-silhouette{position:absolute;left:50%;top:50%;transform:translate(-50%,-48%);width:640px;height:920px;display:block}
+.shoe-silhouette svg{width:100%;height:100%;display:block}
+
+/* ─── Signage (the hero mark) ─── */
+/* A slightly-perspective blue PRÉ VENDA sticker sitting on top of a green LIBERADA plaque */
+.sign{position:absolute;top:80px;left:50%;transform:translateX(-50%);width:820px;height:380px;z-index:5;pointer-events:none}
+.sign .plaque{position:absolute;inset:85px 0 0 0;background:#02A00E;transform:skewY(-1.4deg);box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.sign .sticker{position:absolute;top:0;left:50%;transform:translateX(-50%) skewY(-1.4deg);width:480px;height:160px;background:#005CE1;display:flex;align-items:center;justify-content:center}
+.sign .sticker span{transform:skewY(1.4deg);font-family:'Bayon',sans-serif;color:#FEBF00;font-size:82px;line-height:.8;letter-spacing:.02em}
+.sign .big{position:absolute;inset:85px 0 0 0;display:flex;align-items:center;justify-content:center;transform:skewY(-1.4deg)}
+.sign .big span{transform:skewY(1.4deg);font-family:'Bayon',sans-serif;color:#FEBF00;font-size:220px;line-height:.82;letter-spacing:-.01em;text-align:center;white-space:nowrap}
+
+/* Variant — COMPRE / AGORA! (yellow on green plaque, blue sticker above) */
+.sign.compre .plaque{background:#04B712}
+.sign.compre .sticker{width:400px;height:140px}
+.sign.compre .sticker span{font-family:'MPI Gothic Bold','Archivo Black',sans-serif;font-size:72px}
+.sign.compre .big span{font-size:240px}
+
+/* ─── Bottom CTA banner ─── */
+.cta-bar{position:absolute;left:0;right:0;bottom:0;height:164px;display:flex;align-items:center;justify-content:center;font-family:'Bayon',sans-serif;font-size:78px;letter-spacing:.06em;text-transform:uppercase;line-height:.8}
+.cta-yellow{background:#FEBF00;color:#fff}
+.cta-verde {background:#02A00E;color:#fff}
+
+/* ─── Brand strip below sign (logo + wordmark at mid) ─── */
+.brand-strip{position:absolute;left:0;right:0;top:1060px;display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--font-display);font-size:36px;letter-spacing:.04em}
+.brand-strip svg{width:44px;height:26px}
+
+/* Per-variant colors */
+.ad.verde    .brand-strip{color:#FEBF00}
+.ad.verde    .brand-strip svg{color:#FEBF00}
+.ad.amarelo  .brand-strip{color:#2B9402}
+.ad.amarelo  .brand-strip svg{color:#2B9402}
+.ad.azul     .brand-strip{color:#FEBF00}
+.ad.azul     .brand-strip svg{color:#FEBF00}
+.ad.creme    .brand-strip{color:#FEBF00}
+.ad.creme    .brand-strip svg{color:#FEBF00}
+
+/* ─── Carousel (narrative) slides ─── */
+.car{width:1080px;height:1350px;position:relative;overflow:hidden;font-family:var(--font-display)}
+
+.car-1{background:#F9F1D1}
+.car-1 .eye{position:absolute;top:200px;left:140px;right:140px;font-family:'Bayon',sans-serif;font-size:62px;color:#005CE1;line-height:1.1;text-align:center}
+.car-1 .big{position:absolute;top:390px;left:100px;right:100px;font-family:var(--font-poster);font-size:192px;color:#2B9402;line-height:.98;text-transform:lowercase;text-align:center;letter-spacing:.01em}
+.car-1 .rule{position:absolute;top:700px;left:140px;right:140px;height:10px;background:#FEBF00}
+.car-1 .photo{position:absolute;top:790px;left:140px;right:140px;height:420px;border-radius:30px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#2B9402}
+.car-1 .photo img{width:56%;object-fit:contain}
+.car-1 .mark{position:absolute;top:110px;left:50%;transform:translateX(-50%);width:80px;height:46px;color:#005CE1}
+
+.car-2{background:#2B9402;color:#F9F1D1}
+.car-2 .mark{position:absolute;top:110px;left:140px;width:80px;height:46px;color:#F9F1D1}
+.car-2 .head{position:absolute;top:150px;right:140px;left:280px;font-family:var(--font-poster);font-size:86px;line-height:1.05;color:#F9F1D1;text-transform:lowercase;text-align:right}
+.car-2 .big{position:absolute;top:580px;left:140px;right:140px;font-family:var(--font-poster);font-size:240px;line-height:.88;color:#FEBF00;text-transform:lowercase;text-align:center;letter-spacing:.01em}
+.car-2 .tape{position:absolute;bottom:180px;left:140px;right:140px;background:#FEBF00;color:#2B9402;transform:rotate(-2.5deg);padding:34px 40px;font-family:'Bayon',sans-serif;font-size:48px;text-align:center;letter-spacing:.08em;line-height:1.05}
+
+.car-3{background:#005CE1;color:#FEBF00;padding:170px 140px 140px}
+.car-3 .mark{width:72px;height:42px;color:#FEBF00}
+.car-3 h2{font-family:var(--font-display);font-size:120px;line-height:.98;margin:40px 0 54px;font-weight:normal;text-transform:lowercase;letter-spacing:.01em}
+.car-3 p{font-family:'Arial Narrow','Arial',sans-serif;font-stretch:condensed;font-size:42px;line-height:1.28;margin:0 0 22px;color:#FEBF00}
+.car-3 .y{color:#F9F1D1;margin-top:40px;font-weight:bold}
+
+.car-4{background:#FEBF00}
+.car-4 .eye{position:absolute;top:160px;left:140px;right:140px;font-family:'Bayon',sans-serif;font-size:68px;color:#005CE1;line-height:1;text-align:center}
+.car-4 .big{position:absolute;top:258px;left:100px;right:100px;font-family:var(--font-poster);font-size:198px;color:#005CE1;line-height:.95;text-transform:lowercase;text-align:center;letter-spacing:.01em}
+.car-4 img{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);width:70%;object-fit:contain}
+.car-4 .tag{position:absolute;top:460px;right:120px;background:#FF0000;color:#fff;font-family:'Bayon',sans-serif;font-size:44px;padding:14px 28px;transform:rotate(-4deg);letter-spacing:.04em}
+.car-4 .price{position:absolute;left:120px;bottom:120px;font-family:var(--font-display);color:#005CE1;line-height:.9}
+.car-4 .price span{font-size:28px;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:4px}
+.car-4 .price b{display:block;font-family:var(--font-poster);font-size:150px;color:#2B9402;letter-spacing:.01em}
+
+/* STORY format */
+.story{width:1080px;height:1920px;position:relative;overflow:hidden;font-family:var(--font-display)}
+.canvas.story-cv{aspect-ratio:1080/1920}
+</style></head><body>
+
+<div class="wrap">
+<div class="hero">
+  <h1>ADS / paid-campaign kit</h1>
+  <div class="lbl">Grounded in /ADS/ADS (venda liberada + compre agora) · /ADS/POST (narrative carrossel) · 1080×1350 feed, 1080×1920 story</div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" data-tab="signage">Signage (Venda Liberada / Compre Agora)</button>
+  <button class="tab" data-tab="carrossel">Carrossel manifesto</button>
+  <button class="tab" data-tab="story">Story</button>
+</div>
+
+<!-- ───────────────────── SIGNAGE FAMILY ──────────────────────── -->
+<section data-pane="signage">
+  <div class="sec-head">Pré Venda / Liberada</div>
+  <div class="sec-sub">The signature ad — same 2-layer tilted label on every brand color</div>
+
+  <div class="grid">
+
+    <!-- VERDE -->
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="ad verde bg-verde">
+      <div class="shoe-silhouette">
+        <svg viewBox="0 0 640 920" preserveAspectRatio="xMidYMid meet">
+          <path d="M 130 60 Q 130 20 200 10 L 440 10 Q 510 20 510 60 L 520 680 Q 540 820 440 880 L 200 880 Q 100 820 120 680 Z" fill="#02A00E"/>
+          <path d="M 170 100 Q 170 70 230 65 L 410 65 Q 470 70 470 100 L 480 660 Q 490 790 410 830 L 230 830 Q 150 790 160 660 Z" fill="#FEBF00"/>
+          <path d="M 265 150 Q 320 120 375 150 L 370 770 Q 320 800 270 770 Z" fill="#005CE1"/>
+        </svg>
+      </div>
+      <div class="sign">
+        <div class="sticker"><span>PRÉ VENDA</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>LIBERADA</span></div>
+      </div>
+      <div class="brand-strip">
+        <svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg>
+        <span>PéDireito</span>
+      </div>
+      <div class="cta-bar cta-yellow">CLIQUE EM SAIBA MAIS</div>
+    </div></div></div><div class="lbl">Verde · com produto de fundo</div></div>
+
+    <!-- VERDE ESCURO -->
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="ad verde bg-verdeEsc">
+      <div class="shoe-silhouette" style="opacity:.9">
+        <svg viewBox="0 0 640 920" preserveAspectRatio="xMidYMid meet">
+          <path d="M 170 100 Q 170 70 230 65 L 410 65 Q 470 70 470 100 L 480 660 Q 490 790 410 830 L 230 830 Q 150 790 160 660 Z" fill="#02A00E"/>
+        </svg>
+      </div>
+      <div class="sign">
+        <div class="sticker"><span>PRÉ VENDA</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>LIBERADA</span></div>
+      </div>
+      <div class="brand-strip"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg><span>PéDireito</span></div>
+      <div class="cta-bar cta-yellow">CLIQUE EM SAIBA MAIS</div>
+    </div></div></div><div class="lbl">Verde escuro · silhueta</div></div>
+
+    <!-- AMARELO -->
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="ad amarelo bg-amarelo">
+      <div class="sign">
+        <div class="sticker"><span>PRÉ VENDA</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>LIBERADA</span></div>
+      </div>
+      <div class="brand-strip"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg><span>PéDireito</span></div>
+      <div class="cta-bar cta-verde">CLIQUE EM SAIBA MAIS</div>
+    </div></div></div><div class="lbl">Amarelo · limpo</div></div>
+
+    <!-- AZUL -->
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="ad azul bg-azul">
+      <div class="sign">
+        <div class="sticker"><span>PRÉ VENDA</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>LIBERADA</span></div>
+      </div>
+      <div class="brand-strip"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg><span>PéDireito</span></div>
+      <div class="cta-bar cta-yellow">CLIQUE EM SAIBA MAIS</div>
+    </div></div></div><div class="lbl">Azul · limpo</div></div>
+
+    <!-- CREME -->
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="ad creme bg-creme">
+      <div class="sign">
+        <div class="sticker"><span>PRÉ VENDA</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>LIBERADA</span></div>
+      </div>
+      <div class="brand-strip" style="color:#2B9402"><svg viewBox="0 0 497 280" fill="#2B9402"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg><span>PéDireito</span></div>
+      <div class="cta-bar cta-yellow">CLIQUE EM SAIBA MAIS</div>
+    </div></div></div><div class="lbl">Creme · paper</div></div>
+
+  </div>
+
+  <div class="sec-head">Compre / Agora!</div>
+  <div class="sec-sub">Same system, second campaign — switched sticker copy</div>
+
+  <div class="grid">
+
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="ad verde bg-verde">
+      <div class="shoe-silhouette">
+        <svg viewBox="0 0 640 920" preserveAspectRatio="xMidYMid meet">
+          <path d="M 130 60 Q 130 20 200 10 L 440 10 Q 510 20 510 60 L 520 680 Q 540 820 440 880 L 200 880 Q 100 820 120 680 Z" fill="#02A00E"/>
+          <path d="M 170 100 Q 170 70 230 65 L 410 65 Q 470 70 470 100 L 480 660 Q 490 790 410 830 L 230 830 Q 150 790 160 660 Z" fill="#FEBF00"/>
+          <path d="M 265 150 Q 320 120 375 150 L 370 770 Q 320 800 270 770 Z" fill="#005CE1"/>
+        </svg>
+      </div>
+      <div class="sign compre">
+        <div class="sticker"><span>COMPRE</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>AGORA!</span></div>
+      </div>
+      <div class="brand-strip"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg><span>PéDireito</span></div>
+      <div class="cta-bar cta-yellow">CLIQUE EM SAIBA MAIS</div>
+    </div></div></div><div class="lbl">Verde · compre agora</div></div>
+
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="ad amarelo bg-amarelo">
+      <div class="sign compre">
+        <div class="sticker"><span>COMPRE</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>AGORA!</span></div>
+      </div>
+      <div class="brand-strip"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg><span>PéDireito</span></div>
+      <div class="cta-bar cta-verde">CLIQUE EM SAIBA MAIS</div>
+    </div></div></div><div class="lbl">Amarelo · compre</div></div>
+
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="ad azul bg-azul">
+      <div class="sign compre">
+        <div class="sticker"><span>COMPRE</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>AGORA!</span></div>
+      </div>
+      <div class="brand-strip"><svg viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg><span>PéDireito</span></div>
+      <div class="cta-bar cta-yellow">CLIQUE EM SAIBA MAIS</div>
+    </div></div></div><div class="lbl">Azul · compre</div></div>
+
+  </div>
+</section>
+
+<!-- ───────────────────── CARRROSSEL MANIFESTO ──────────────────── -->
+<section data-pane="carrossel" hidden>
+  <div class="sec-head">Carrossel manifesto (7 slides)</div>
+  <div class="sec-sub">Narrative sequence — opens with a question, builds to a position, closes on the product</div>
+
+  <div class="grid">
+
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="car car-1">
+      <svg class="mark" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg>
+      <div class="eye">Durante anos,<br/>o brasileiro foi ensinado a ter</div>
+      <div class="big">vergonha<br/>de si.</div>
+      <div class="rule"></div>
+      <div class="photo"><img src="../../assets/product-verde.png" alt=""></div>
+    </div></div></div><div class="lbl">01 · Abertura — vergonha de si</div></div>
+
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="car car-2">
+      <svg class="mark" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg>
+      <div class="head">Dos símbolos.<br>Da fé.<br>Da tradição.</div>
+      <div class="big">da própria<br/>casa.</div>
+      <div class="tape">DITADO POPULAR · IDENTIDADE NACIONAL</div>
+    </div></div></div><div class="lbl">02 · Os sintomas — da própria casa</div></div>
+
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="car car-3">
+      <svg class="mark" viewBox="0 0 497 280" fill="currentColor"><path d="M486 122L265 3c-7-4-16-4-23 0L11 122c-15 8-15 27 0 35l231 120c7 4 16 4 23 0l221-120c15-8 15-27 0-35zM248 214c-46 0-83-33-83-75s37-74 83-74 83 33 83 74-37 75-83 75z"/></svg>
+      <h2>nota de<br/>repúdio.</h2>
+      <p>A gente não pediu licença. Não pediu desculpa. Não pediu para caber.</p>
+      <p>Pé Direito incomoda porque não pede permissão.</p>
+      <p class="y">Pé direito. Sempre.</p>
+    </div></div></div><div class="lbl">03 · A posição — nota de repúdio</div></div>
+
+    <div class="item"><div class="canvas"><div class="scale" style="transform:scale(calc(260/1080))"><div class="car car-4">
+      <div class="eye">O chinelo do</div>
+      <div class="big">brasileiro.</div>
+      <img src="../../assets/product-azul.png" alt="">
+      <div class="tag">LANÇAMENTO</div>
+      <div class="price"><span>A partir de</span><b>R$89</b></div>
+    </div></div></div><div class="lbl">04 · Fechamento · produto + preço</div></div>
+
+  </div>
+</section>
+
+<!-- ─────────────────────────── STORY ────────────────────────────── -->
+<section data-pane="story" hidden>
+  <div class="sec-head">Story · 1080×1920</div>
+  <div class="sec-sub">Vertical variant of the signage system for IG/FB stories</div>
+
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+
+    <div class="item"><div class="canvas story-cv"><div class="scale" style="transform:scale(calc(220/1080))"><div class="story bg-verde" style="height:1920px">
+      <div class="shoe-silhouette" style="top:46%;width:580px;height:820px">
+        <svg viewBox="0 0 640 920" preserveAspectRatio="xMidYMid meet">
+          <path d="M 130 60 Q 130 20 200 10 L 440 10 Q 510 20 510 60 L 520 680 Q 540 820 440 880 L 200 880 Q 100 820 120 680 Z" fill="#02A00E"/>
+          <path d="M 170 100 Q 170 70 230 65 L 410 65 Q 470 70 470 100 L 480 660 Q 490 790 410 830 L 230 830 Q 150 790 160 660 Z" fill="#FEBF00"/>
+          <path d="M 265 150 Q 320 120 375 150 L 370 770 Q 320 800 270 770 Z" fill="#005CE1"/>
+        </svg>
+      </div>
+      <div class="sign" style="top:180px">
+        <div class="sticker"><span>PRÉ VENDA</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>LIBERADA</span></div>
+      </div>
+      <div class="cta-bar cta-yellow" style="bottom:180px">ARRASTA PARA CIMA</div>
+    </div></div></div><div class="lbl">Verde · story</div></div>
+
+    <div class="item"><div class="canvas story-cv"><div class="scale" style="transform:scale(calc(220/1080))"><div class="story bg-amarelo" style="height:1920px">
+      <div class="sign" style="top:360px">
+        <div class="sticker"><span>PRÉ VENDA</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>LIBERADA</span></div>
+      </div>
+      <img src="../../assets/product-azul.png" style="position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);width:76%">
+      <div class="cta-bar cta-verde" style="bottom:180px">ARRASTA PARA CIMA</div>
+    </div></div></div><div class="lbl">Amarelo · story · produto</div></div>
+
+    <div class="item"><div class="canvas story-cv"><div class="scale" style="transform:scale(calc(220/1080))"><div class="story bg-azul" style="height:1920px">
+      <div class="sign compre" style="top:360px">
+        <div class="sticker"><span>COMPRE</span></div>
+        <div class="plaque"></div>
+        <div class="big"><span>AGORA!</span></div>
+      </div>
+      <img src="../../assets/product-amarelo.png" style="position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);width:76%">
+      <div class="cta-bar cta-yellow" style="bottom:180px">ARRASTA PARA CIMA</div>
+    </div></div></div><div class="lbl">Azul · story · compre</div></div>
+
+  </div>
+</section>
+
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    document.querySelectorAll('[data-pane]').forEach(p=>p.hidden=p.dataset.pane!==btn.dataset.tab);
+  });
+});
+</script>
+
+</body></html>
