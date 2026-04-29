@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "atualizado_em": "2026-04-29",
+  "comentario": "Registry de uso de vídeos do banco brand/assets/midia/videos/. Mantido pelos agentes pedireito-designer-* e pedireito-revisor. Antes de escolher vídeo novo, consultar este JSON pra evitar reuso recente. Vídeos do banco que NÃO aparecem aqui = nunca foram usados (preferir esses). Após gerar peça que usa vídeo, adicionar entrada com {peca, data}. Severidade do revisor: (a) reuso do mesmo vídeo em slides diferentes do mesmo carrossel = 🚨 BLOCKER; (b) reuso entre peças com data <30 dias = ⚠️ WARNING; (c) reuso entre peças com data >30 dias = 📝 NIT.",
+  "videos": {
+    "vid-01.mp4": [
+      { "peca": "posts-video/poc-fazer-o-certo", "data": "2026-04-29", "tipo": "post-video", "nota": "POC inicial do pipeline. Ave azul+amarela on-brand cromaticamente." }
+    ],
+    "vid-02.mp4": [
+      { "peca": "carrosseis/jogo-virou", "slot": "slide-05", "data": "2026-04-29", "tipo": "carrossel", "nota": "Litoral aéreo brasileiro no slide do vilão (máquina cultural). Substituiu img-30.jpg." }
+    ]
+  }
+}

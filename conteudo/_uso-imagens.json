@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "atualizado_em": "2026-04-29",
+  "comentario": "Registry de uso de imagens do banco brand/assets/midia/. Mantido pelos agentes pedireito-designer-carrossel, pedireito-designer-posts e pedireito-revisor. Antes de escolher uma imagem nova, consultar este JSON pra evitar reuso recente. Imagens do banco que NÃO aparecem aqui = nunca foram usadas (preferir essas). Após gerar uma peça que usa imagem do banco, adicionar entrada com {peca, data}. O revisor flagra: (a) reuso da mesma imagem em slides diferentes do mesmo carrossel = 🚨 BLOCKER; (b) reuso entre peças com data <30 dias = ⚠️ WARNING; (c) reuso entre peças com data >30 dias = 📝 NIT.",
+  "imagens": {
+    "img-04.jpg": [
+      { "peca": "carrossel-sozinho", "data": "2026-04-29" }
+    ],
+    "img-06.jpg": [
+      { "peca": "carrossel-sozinho", "data": "2026-04-29" },
+      { "peca": "carrossel-torres", "data": "2026-04-29" }
+    ],
+    "img-10.jpg": [
+      { "peca": "carrossel-torres", "data": "2026-04-29" }
+    ],
+    "img-15.jpg": [
+      { "peca": "carrossel-torres", "data": "2026-04-29" }
+    ],
+    "img-22.jpg": [
+      { "peca": "carrossel-sozinho", "data": "2026-04-29" }
+    ],
+    "img-30.jpg": [
+      { "peca": "carrossel-torres", "data": "2026-04-29" },
+      { "peca": "carrosseis/jogo-virou", "slot": "slide-05", "data": "2026-04-29" }
+    ]
+  }
+}

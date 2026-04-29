@@ -59,23 +59,77 @@ Varie templates entre slides pra ritmo visual — não use `.tpl-balanced` em to
 - **Paleta**: verde `#2B9402`, amarelo `#FEBF00`, azul `#005CE1`, bege `#F9F1D1`. Cada slide pode dominar uma cor diferente — vai dar ritmo cromático ao carrossel.
 - **Sem preto puro. Sem itálico. Nenhuma fonte fora das 4 oficiais.**
 - **Voz**: manifesto, declarativa, terceira pessoa coletiva ("a gente", "o brasileiro"). Lowercase com acentos uppercase pontuais.
-- **Imagens só do banco**. Se faltar, alternativa tipográfica.
+- **Sem travessão (`—` / `–`) em conteúdo visível dos slides** (headline, body, eyebrow, footer, caption). Manifesto Pé Direito é declarativo, frases curtas pontuadas com `.` ou `,`. Onde a copy original use travessão, substituir por ponto final (frases independentes) ou vírgula (justaposição). Travessão pode aparecer em `<title>` ou comentário do HTML, mas nunca dentro de um `.slide`.
+- **Imagens e vídeos só do banco** (`brand/assets/midia/` e `brand/assets/midia/videos/`). Se faltar, alternativa tipográfica.
+- **Sem reuso de imagem/vídeo dentro do mesmo carrossel** — se 2 slides precisam de foto, são 2 imagens diferentes do banco. Slide A com `img-15.jpg` + slide B com `img-15.jpg` = bug.
+- **Antes de escolher**, ler `conteudo/_uso-imagens.json` e `conteudo/_uso-videos.json`, priorizar assets NÃO listados (nunca usados) ou listados com data antiga. Reuso em peça com data <30 dias deve ser evitado pra não saturar o feed.
+- **Depois de gerar o carrossel**, adicionar entradas em `_uso-imagens.json` e/ou `_uso-videos.json` pros assets usados: `{ "peca": "carrosseis/<slug>", "slot": "slide-NN", "data": "<YYYY-MM-DD>" }`.
+
+## Vídeo vs imagem — você decide (autonomia)
+
+Você não precisa esperar o usuário pedir pra usar vídeo. Quando o banco tiver vídeo on-brand alinhado ao tema do slide, **prefira vídeo** — engajamento no Instagram costuma ser maior em carrossel com movimento. Decide cirurgicamente, slide a slide.
+
+**Quando usar VÍDEO**:
+- Slides de virada, clímax, manifesto épico (movimento amplifica peso emocional)
+- Slides photo-bleed cuja cena ganha com tempo: paisagem aérea, multidão, trabalho em ação, fé/ritual, mãos, fluxos urbanos, ondas, bandeiras tremulando
+- Slide do "vilão" / da denúncia (movimento sutil cria tensão)
+- Hook (slide 1) ou CTA (slide N) quando quiser parar o scroll
+
+**Quando usar IMAGEM**:
+- Portraits estáticos, detalhes íntimos, momentos congelados
+- Frames simbólicos onde a quietude é o efeito (chão, olhar fixo, objeto único)
+- Slides com texto pesado já dominante — o movimento competiria com leitura
+- Slides de transição rápida no arco (passar reto, sem ficar)
+
+**Sweet spot**: **1–2 slides com vídeo por carrossel de 10**. Mais que isso o pacote final passa fácil dos 30MB (limite Instagram) e o feed fica lento de processar. **Nunca 3+ vídeos no mesmo carrossel**.
+
+**Estrutura HTML do slide com vídeo de fundo** (substitui `style="background-image:url(...)"`):
+```html
+<div class="slide-holder"><div class="slide photo-bleed">
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="assets/videos/vid-NN.mp4" type="video/mp4">
+  </video>
+  <div class="mark">…</div>
+  <div class="body up tpl-split">…texto…</div>
+</div></div>
+```
+O CSS `.slide.photo-bleed .bg-video` já posiciona o vídeo full-bleed atrás do texto (z-index:0); overlay rgba e mark ficam acima.
+
+**Reportar ao usuário**: ao entregar o carrossel, deixe explícito quais slides têm vídeo e por quê escolheu vídeo neles. Ex: "slide 5 (vilão) → vídeo aéreo do litoral pra dar peso à 'máquina cultural'; resto estático".
 - **Ícone-diamante**: respeite tamanho/posição por template. Slide de fechamento geralmente leva o ícone grande sozinho.
 - **Bleed**: respeite safe-area definida na guideline.
 
 ## Workflow
 
-1. Ler guideline + carrossel-torres (referência) + pedido do usuário.
+1. Ler guideline + carrossel-torres (referência) + `conteudo/_uso-imagens.json` (registry de imagens já usadas) + pedido do usuário.
 2. **Mapear o arco em texto** antes de codar: "slide 1 = X, slide 2 = Y..." em 1 parágrafo. Confirme com o usuário se o arco for grande (5+ slides) ou ambíguo.
-3. Decidir paleta dominante por slide e templates por slide.
+3. Decidir paleta dominante por slide, templates por slide e — pros slides com foto — quais imagens do banco usar (priorizar não-listadas no registry, evitar reuso recente).
 4. Gerar HTML (use carrossel-torres como esqueleto técnico).
-5. **Abrir no browser**:
+5. **Atualizar `conteudo/_uso-imagens.json`** com as imagens efetivamente usadas no carrossel novo.
+6. **Abrir no browser**:
    ```bash
    open /Users/pedromerino/Documents/PeDireito/conteudo/carrosseis/<slug>/index.html
    ```
-6. Verificar cada slide visualmente: hierarquia, ritmo entre cards, ícone correto, fonts carregadas.
-7. Checklist seção 16 da guideline.
-8. Reportar: caminho, número de slides, arco resumido, templates usados, decisões não-óbvias.
+7. Verificar cada slide visualmente: hierarquia, ritmo entre cards, ícone correto, fonts carregadas.
+8. Checklist seção 16 da guideline.
+9. **Pra slides com vídeo**: pré-gerar os mp4s + bake em base64 inline antes de entregar — usuário pode clicar no botão "BAIXAR TUDO" no browser (mesmo em `file://` sem servidor):
+   ```bash
+   cp /Users/pedromerino/Documents/PeDireito/.claude/skills/pedireito-design/tools/{render-video,bake-videos}.mjs /tmp/pedireito-review/
+   # 1) Gera mp4 do(s) slide(s) com vídeo:
+   node /tmp/pedireito-review/render-video.mjs <html> <pasta>/pedireito-slide-NN.mp4 --slide=N --duration=8
+   # 2) Bake todos os mp4s em base64 inline (pro botão funcionar em file://):
+   node /tmp/pedireito-review/bake-videos.mjs <pasta>
+   ```
+   Naming canônico: `pedireito-slide-NN.mp4` na mesma pasta do `index.html`. O bake gera `pedireito-videos-inline.js` (~3MB por mp4) que é carregado lazy pelo HTML quando o usuário clica BAIXAR. **Sem o bake, o ZIP do botão browser cai pra PNG fallback no slide com vídeo.**
+
+   **Pré-requisito do HTML do carrossel**: a página precisa carregar `JSZip` (`<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>`) e ter o JS do botão que tenta `window.PEDIREITO_VIDEOS` antes de fetch. Use `conteudo/carrosseis/jogo-virou/index.html` como referência.
+10. **Antes de declarar feito**, sugerir ao usuário rodar o `pedireito-revisor` no carrossel pra checagem automatizada de overflow lateral, overlap com mark, paleta e reuso de imagem/vídeo.
+11. **Pra entrega final em ZIP único** (PNGs + MP4s + ZIP), oferecer ao usuário:
+    ```bash
+    cp /Users/pedromerino/Documents/PeDireito/.claude/skills/pedireito-design/tools/{render-video,export-carrossel}.mjs /tmp/pedireito-review/
+    node /tmp/pedireito-review/export-carrossel.mjs <html>
+    ```
+12. Reportar: caminho, número de slides, arco resumido, templates usados, imagens E vídeos utilizados, slides com vídeo + justificativa, decisões não-óbvias.
 
 ## O que não fazer
 
