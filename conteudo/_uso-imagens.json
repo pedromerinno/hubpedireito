@@ -3,6 +3,12 @@
   "atualizado_em": "2026-04-29",
   "comentario": "Registry de uso de imagens do banco brand/assets/midia/. Mantido pelos agentes pedireito-designer-carrossel, pedireito-designer-posts e pedireito-revisor. Antes de escolher uma imagem nova, consultar este JSON pra evitar reuso recente. Imagens do banco que NÃO aparecem aqui = nunca foram usadas (preferir essas). Após gerar uma peça que usa imagem do banco, adicionar entrada com {peca, data}. O revisor flagra: (a) reuso da mesma imagem em slides diferentes do mesmo carrossel = 🚨 BLOCKER; (b) reuso entre peças com data <30 dias = ⚠️ WARNING; (c) reuso entre peças com data >30 dias = 📝 NIT.",
   "imagens": {
+    "img-01.png": [
+      { "peca": "carrosseis/comece-com-o-pe-direito", "slot": "slide-09", "data": "2026-04-29" }
+    ],
+    "img-02.jpg": [
+      { "peca": "carrosseis/comece-com-o-pe-direito", "slot": "slide-08", "data": "2026-04-29" }
+    ],
     "img-04.jpg": [
       { "peca": "carrossel-sozinho", "data": "2026-04-29" }
     ],

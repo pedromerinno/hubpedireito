@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Pé Direito — design tokens (espelha brand/assets/colors_and_type.css)
+   ============================================================ */
+
+@layer base {
+  :root {
+    /* core flag trio */
+    --pd-verde: 105 97% 29%;          /* #2B9402 */
+    --pd-amarelo: 45 100% 50%;        /* #FEBF00 */
+    --pd-azul: 215 100% 44%;          /* #005CE1 */
+    --pd-cream: 50 88% 92%;           /* #FCF7DB */
+    --pd-verde-escuro: 105 100% 19%;  /* #1B6200 */
+    --pd-ink: 0 0% 4%;
+    --pd-red: 0 100% 50%;
+
+    /* shadcn semantic mapping → brand
+       OBS: --foreground usa verde-escuro pra evitar preto puro (regra de marca).
+       Texto fica num tom escuro on-brand sobre o bg cream. */
+    --background: var(--pd-cream);
+    --foreground: var(--pd-verde-escuro);
+
+    --card: 49 75% 95%;
+    --card-foreground: var(--pd-ink);
+
+    --popover: var(--pd-cream);
+    --popover-foreground: var(--pd-ink);
+
+    --primary: var(--pd-verde);
+    --primary-foreground: var(--pd-amarelo);
+
+    --secondary: var(--pd-amarelo);
+    --secondary-foreground: var(--pd-verde-escuro);
+
+    --success: var(--pd-verde);
+    --success-foreground: var(--pd-amarelo);
+
+    --muted: 49 35% 88%;
+    --muted-foreground: 0 0% 30%;
+
+    --accent: var(--pd-azul);
+    --accent-foreground: var(--pd-amarelo);
+
+    --destructive: var(--pd-red);
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 0% / 0.12;
+    --input: 0 0% 0% / 0.12;
+    --ring: var(--pd-verde);
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html, body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+/* ============================================================
+   Brand utilities — usar no JSX via className
+   ============================================================ */
+
+@layer components {
+  .pd-display {
+    font-family: "Anton", "Arial Narrow", Impact, sans-serif;
+    line-height: 0.96;
+    text-transform: lowercase;
+  }
+
+  .pd-poster {
+    font-family: "Archivo Black", Impact, sans-serif;
+    line-height: 0.95;
+  }
+
+  .pd-lead {
+    font-family: "Bayon", "Archivo Black", Impact, sans-serif;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  .pd-body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+  }
+
+  .pd-narrow {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.3;
+  }
+}
+
+/* Marquee horizontal usado em LaunchDateBanner / ProductGallery */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.3333%); }
+}

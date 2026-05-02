@@ -22,13 +22,14 @@ for (let i = 0; i < count; i++) {
   await page.evaluate((idx) => {
     document.querySelectorAll('.iso-render').forEach(n => n.remove());
     const orig = document.querySelectorAll('#track > .slide-holder')[idx].querySelector('.slide');
+    const origBg = orig.style.backgroundImage; // preserva inline background
     const clone = orig.cloneNode(true);
-    clone.style.cssText = 'position:fixed;top:0;left:0;width:1080px;height:1350px;transform:none;z-index:99999';
+    clone.style.cssText = `position:fixed;top:0;left:0;width:1080px;height:1350px;transform:none;z-index:99999;${origBg ? `background-image:${origBg};background-size:cover;background-position:center;` : ''}`;
     clone.classList.add('iso-render');
     document.body.appendChild(clone);
   }, i);
 
-  await new Promise(r => setTimeout(r, 100));
+  await new Promise(r => setTimeout(r, 400));
   const el = await page.$('.iso-render');
   const file = `${OUT}/slide-${String(i + 1).padStart(2, '0')}.png`;
   await el.screenshot({ path: file });
