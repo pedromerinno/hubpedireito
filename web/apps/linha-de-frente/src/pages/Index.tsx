@@ -98,7 +98,18 @@ const Index = () => {
             Te disseram pra não começar com o Pé Direito.
           </h1>
 
-          <p className="font-narrow font-semibold text-center mt-10 text-amarelo leading-[1.18] text-balance text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto" data-hero-reveal>
+          <div className="flex justify-center mt-4 sm:mt-6 w-full" data-hero-reveal>
+            <img
+              src="/Banner_Chinelo_A.gif"
+              alt="Chinelo azul girando em loop, em fundo verde."
+              className="w-full max-w-4xl h-auto select-none pointer-events-none"
+              width={956}
+              height={304}
+              decoding="async"
+            />
+          </div>
+
+          <p className="font-narrow font-semibold text-center mt-8 sm:mt-10 text-amarelo leading-[1.18] text-balance text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto" data-hero-reveal>
             A gente fez uma marca feita pra quem cansou de ver o lado certo ser tratado como lado B.
           </p>
 
