@@ -38,7 +38,7 @@ export function FloatingCta() {
           <div className="flex items-center gap-3 shrink-0">
             <CtaButton
               size="md"
-              onClick={() => joinWhatsAppGroup("/boas-vindas")}
+              onClick={() => joinWhatsAppGroup()}
             >
               Entrar no Círculo
             </CtaButton>

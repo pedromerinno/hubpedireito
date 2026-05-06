@@ -34,7 +34,7 @@ function useCountdown(target: Date) {
 const Index = () => {
   const timeLeft = useCountdown(LAUNCH_DATE);
 
-  const entrarNoCirculo = () => joinWhatsAppGroup("/boas-vindas");
+  const entrarNoCirculo = () => joinWhatsAppGroup();
 
   // Hero entrance — stagger sutil ao carregar.
   useLayoutEffect(() => {

@@ -6,7 +6,7 @@ import { whatsappInviteUrl } from "@/lib/whatsapp";
 interface SiteFooterProps {
   /**
    * Quando true, exibe o aviso "Horário de Brasília. Sem prorrogação." na linha
-   * de fechamento. Use em páginas de pré-lançamento (Index, BoasVindas).
+   * de fechamento. Use em páginas de pré-lançamento (Index).
    * Default: false.
    */
   showLaunchDisclaimer?: boolean;
