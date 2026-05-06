@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import FaqSuporte from "./pages/FaqSuporte";
 import NotFound from "./pages/NotFound";
+import { LeadModalProvider } from "@/lib/leadModal";
+import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 
 const queryClient = new QueryClient();
 
@@ -15,11 +17,14 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/faq" element={<FaqSuporte />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <LeadModalProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/faq" element={<FaqSuporte />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <LeadCaptureModal />
+        </LeadModalProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

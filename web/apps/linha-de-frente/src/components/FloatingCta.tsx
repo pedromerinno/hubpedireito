@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { CtaButton } from "@/components/CtaButton";
-import { joinWhatsAppGroup } from "@/lib/whatsapp";
+import { useLeadModal } from "@/lib/leadModal";
 
 export function FloatingCta() {
+  const { open: openLeadModal } = useLeadModal();
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -38,7 +39,7 @@ export function FloatingCta() {
           <div className="flex items-center gap-3 shrink-0">
             <CtaButton
               size="md"
-              onClick={() => joinWhatsAppGroup()}
+              onClick={() => openLeadModal("floating-cta")}
             >
               Entrar no Círculo
             </CtaButton>

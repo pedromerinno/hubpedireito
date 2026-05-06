@@ -9,7 +9,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { FullBleedImage } from "@/components/FullBleedImage";
 import { EditorialBlock } from "@/components/EditorialBlock";
 import { FloatingCta } from "@/components/FloatingCta";
-import { joinWhatsAppGroup } from "@/lib/whatsapp";
+import { useLeadModal } from "@/lib/leadModal";
 import { useReveal } from "@/hooks/useReveal";
 
 // Lançamento oficial: 12.05.2026 · 00:00 BRT (horário de Brasília, UTC-3)
@@ -33,8 +33,9 @@ function useCountdown(target: Date) {
 
 const Index = () => {
   const timeLeft = useCountdown(LAUNCH_DATE);
+  const { open: openLeadModal } = useLeadModal();
 
-  const entrarNoCirculo = () => joinWhatsAppGroup();
+  const entrarNoCirculo = () => openLeadModal("hero-cta");
 
   // Hero entrance — stagger sutil ao carregar.
   useLayoutEffect(() => {
