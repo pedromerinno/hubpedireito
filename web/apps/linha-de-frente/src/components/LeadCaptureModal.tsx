@@ -262,11 +262,11 @@ export function LeadCaptureModal() {
             Acesso antecipado
           </p>
           <h2 className="font-display uppercase text-verde-escuro leading-[0.95] text-3xl sm:text-4xl">
-            Entra no Círculo do <br className="hidden sm:block" />
+            Entra no Grupo no WhatsApp do <br className="hidden sm:block" />
             Pé Direito.
           </h2>
           <p className="font-narrow text-verde-escuro/85 mt-3 text-sm sm:text-[15px] leading-snug">
-            Quem está dentro recebe o link com prioridade no dia 12.05.
+            Quem está dentro recebe o link com prioridade no dia 14.05.
           </p>
         </div>
 

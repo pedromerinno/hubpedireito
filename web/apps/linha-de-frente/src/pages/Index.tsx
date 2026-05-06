@@ -12,8 +12,8 @@ import { FloatingCta } from "@/components/FloatingCta";
 import { useLeadModal } from "@/lib/leadModal";
 import { useReveal } from "@/hooks/useReveal";
 
-// Lançamento oficial: 12.05.2026 · 00:00 BRT (horário de Brasília, UTC-3)
-const LAUNCH_DATE = new Date("2026-05-12T00:00:00-03:00");
+// Lançamento oficial: 14.05.2026 · 09:00 BRT (horário de Brasília, UTC-3)
+const LAUNCH_DATE = new Date("2026-05-14T09:00:00-03:00");
 
 function useCountdown(target: Date) {
   const [delta, setDelta] = useState(() => target.getTime() - Date.now());
@@ -73,7 +73,7 @@ const Index = () => {
       <div className="bg-verde text-amarelo">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-4 sm:py-5 grid grid-cols-3 items-center">
           <span className="justify-self-start font-narrow font-semibold text-xs">
-            12.05
+            14.05
           </span>
           <span className="justify-self-center font-narrow font-semibold text-xs text-center">
             Pé Direito
@@ -92,7 +92,7 @@ const Index = () => {
           </div>
 
           <p className="font-narrow font-semibold uppercase text-amarelo text-center mt-12 text-sm sm:text-base" data-hero-reveal>
-            Lançamento Oficial · Dia 12 de Maio
+            Lançamento Oficial · Dia 14 de Maio
           </p>
 
           <h1 className="font-display uppercase text-amarelo text-center mt-6 leading-[1.02] text-balance text-[12vw] sm:text-[8vw] md:text-[88px] lg:text-[100px]" data-hero-reveal>
@@ -126,10 +126,10 @@ const Index = () => {
 
           <div className="mt-12 flex flex-col items-center gap-3" data-hero-reveal>
             <CtaButton onClick={entrarNoCirculo}>
-              Entrar no Círculo Pé Direito
+              Entrar no Grupo no WhatsApp Pé Direito
             </CtaButton>
             <p className="font-narrow font-semibold text-[11px] sm:text-xs text-amarelo">
-              Vagas limitadas · O Círculo fecha antes do dia 12
+              Vagas limitadas · O Grupo no WhatsApp fecha antes do dia 14
             </p>
           </div>
         </div>
@@ -326,7 +326,7 @@ const Index = () => {
             {[
               { n: "+480 mil", l: "Pessoas caminhando junto" },
               { n: "20 mil", l: "Pares vendidos na pré-venda" },
-              { n: "80 mil", l: "Pares prontos pro dia 12" },
+              { n: "80 mil", l: "Pares prontos pro dia 14" },
             ].map((stat) => (
               <div
                 key={stat.l}
@@ -344,7 +344,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ─────────── 04 · O CÍRCULO (intro) ─────────── */}
+      {/* ─────────── 04 · O GRUPO NO WHATSAPP (intro) ─────────── */}
       <div ref={primeiroPassoRef}>
       <EditorialBlock
         src="/images/img-06.jpg"
@@ -357,17 +357,17 @@ const Index = () => {
         </span>
 
         <h2 className="font-display uppercase text-verde mt-8 leading-[1.02] text-balance text-4xl sm:text-5xl lg:text-6xl">
-          Tudo começa com o primeiro passo. O seu é entrar no Círculo.
+          Tudo começa com o primeiro passo. O seu é entrar no Grupo no WhatsApp.
         </h2>
 
         <div className="font-narrow text-verde-escuro mt-8 text-base sm:text-lg leading-relaxed max-w-lg space-y-5">
           <p>
-            O Círculo Pé Direito é o primeiro lugar onde a marca acontece. É de
+            O Grupo no WhatsApp Pé Direito é o primeiro lugar onde a marca acontece. É de
             lá que sai o link de compra antes da loja, é de lá que sai recado
             direto, sem filtro de algoritmo, sem rede social no meio.
           </p>
           <p>
-            Quem entra no Círculo não tá só comprando primeiro. Tá participando
+            Quem entra no Grupo no WhatsApp não tá só comprando primeiro. Tá participando
             ativamente das ações que apontam pra transformação cultural que a
             gente quer ver no Brasil.
           </p>
@@ -379,21 +379,21 @@ const Index = () => {
 
         <div className="mt-10 flex">
           <CtaButton onClick={entrarNoCirculo}>
-            Entrar no Círculo Pé Direito
+            Entrar no Grupo no WhatsApp Pé Direito
           </CtaButton>
         </div>
       </EditorialBlock>
       </div>
 
-      {/* ─────────── 04 · O CÍRCULO (4 cards) ─────────── */}
+      {/* ─────────── 04 · O GRUPO NO WHATSAPP (4 cards) ─────────── */}
       <section className="bg-verde-escuro px-6 sm:px-10 lg:px-16 py-20 sm:py-28">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14 sm:mb-16 max-w-3xl mx-auto" ref={circuloHeaderRef}>
             <span className="inline-block font-narrow font-semibold text-verde-escuro text-xs sm:text-sm bg-amarelo rounded-full px-5 py-2">
-              O que você ganha no Círculo
+              O que você ganha no Grupo no WhatsApp
             </span>
             <h3 className="font-display uppercase text-amarelo mt-8 leading-[1.05] text-balance text-3xl sm:text-4xl lg:text-5xl">
-              Quatro motivos pra estar lá dentro antes do dia 12.
+              Quatro motivos pra estar lá dentro antes do dia 14.
             </h3>
           </div>
 
@@ -402,12 +402,12 @@ const Index = () => {
               {
                 n: "01",
                 t: "Você compra antes do Brasil inteiro.",
-                d: "No dia 12, a venda abre primeiro aqui dentro. Quem está no Círculo escolhe primeiro, garante o tamanho, garante o par.",
+                d: "No dia 14, a venda abre primeiro aqui dentro. Quem está no Grupo no WhatsApp escolhe primeiro, garante o tamanho, garante o par.",
               },
               {
                 n: "02",
                 t: "Você participa das próximas ações.",
-                d: "A Pé Direito não vai parar no chinelo. As próximas ações culturais saem primeiro daqui. Quem está no Círculo decide junto e anda junto.",
+                d: "A Pé Direito não vai parar no chinelo. As próximas ações culturais saem primeiro daqui. Quem está no Grupo no WhatsApp decide junto e anda junto.",
               },
               {
                 n: "03",
@@ -417,7 +417,7 @@ const Index = () => {
               {
                 n: "04",
                 t: "Você entra pra história da marca.",
-                d: "Os primeiros do Círculo ficam registrados. Quando essa marca virar o que ela vai virar, dá pra dizer: eu estava.",
+                d: "Os primeiros do Grupo no WhatsApp ficam registrados. Quando essa marca virar o que ela vai virar, dá pra dizer: eu estava.",
               },
             ].map((card) => (
               <article
@@ -439,10 +439,10 @@ const Index = () => {
 
           <div className="mt-14 sm:mt-16 flex flex-col items-center gap-3">
             <CtaButton onClick={entrarNoCirculo}>
-              Entrar no Círculo Pé Direito
+              Entrar no Grupo no WhatsApp Pé Direito
             </CtaButton>
             <p className="font-narrow font-semibold text-[11px] sm:text-xs text-cream">
-              Vagas limitadas · O Círculo fecha antes do dia 12
+              Vagas limitadas · O Grupo no WhatsApp fecha antes do dia 14
             </p>
           </div>
         </div>
@@ -481,7 +481,7 @@ const Index = () => {
           </div>
 
           <p className="font-narrow font-semibold uppercase text-verde mt-16 text-sm sm:text-base">
-            Pé Direito · 12.05.2026
+            Pé Direito · 14.05.2026
           </p>
         </div>
       </section>
@@ -501,7 +501,7 @@ const Index = () => {
           </h2>
 
           <p className="font-narrow text-amarelo mt-10 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-            A gente começa dia 12. Mas o seu começo é agora. Entra no Círculo,
+            A gente começa dia 14. Mas o seu começo é agora. Entra no Grupo no WhatsApp,
             anda primeiro, e faz parte do que vai virar uma das maiores
             transformações culturais que esse país já viu.
           </p>
@@ -516,12 +516,12 @@ const Index = () => {
 
           <div className="mt-12 flex flex-col items-center gap-4">
             <CtaButton onClick={entrarNoCirculo}>
-              Entrar no Círculo Pé Direito
+              Entrar no Grupo no WhatsApp Pé Direito
             </CtaButton>
             <p className="font-narrow font-semibold text-[11px] sm:text-xs text-amarelo inline-flex items-center gap-2">
               <span aria-hidden>⚠</span>
               <span>
-                O Círculo fecha antes do lançamento. Quem entra agora, anda
+                O Grupo no WhatsApp fecha antes do lançamento. Quem entra agora, anda
                 primeiro.
               </span>
             </p>

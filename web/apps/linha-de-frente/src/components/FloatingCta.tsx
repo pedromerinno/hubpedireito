@@ -26,14 +26,14 @@ export function FloatingCta() {
       <div className="bg-verde-escuro/95 backdrop-blur-md border-t border-amarelo/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-4">
           <p className="font-narrow text-cream text-sm sm:text-base leading-tight hidden sm:block">
-            <span className="text-amarelo font-semibold">12.05 · Lançamento</span>
+            <span className="text-amarelo font-semibold">14.05 · Lançamento</span>
             {" · "}
-            Quem está no Círculo compra primeiro.
+            Quem está no Grupo no WhatsApp compra primeiro.
           </p>
           <p className="font-narrow text-cream text-sm leading-tight sm:hidden">
-            <span className="text-amarelo font-semibold">12.05</span>
+            <span className="text-amarelo font-semibold">14.05</span>
             {" · "}
-            Círculo compra primeiro.
+            Grupo no WhatsApp compra primeiro.
           </p>
 
           <div className="flex items-center gap-3 shrink-0">
@@ -41,7 +41,7 @@ export function FloatingCta() {
               size="md"
               onClick={() => openLeadModal("floating-cta")}
             >
-              Entrar no Círculo
+              Entrar no Grupo no WhatsApp
             </CtaButton>
             <button
               onClick={() => setDismissed(true)}
