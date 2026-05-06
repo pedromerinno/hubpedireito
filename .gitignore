@@ -31,3 +31,4 @@ coverage
 
 # archive — backups locais, não vai pro repo
 _archive
+.wrangler/
