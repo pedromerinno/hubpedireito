@@ -196,11 +196,10 @@ export function LeadCaptureModal() {
 
       if (res.ok) {
         toast.success("Pronto! Estamos com você.");
-      } else {
-        toast.message("Recebemos seus dados.", {
-          description: "Salvamos localmente e reenviaremos em instantes.",
-        });
       }
+      // Buffer silencioso: se !res.ok, lead já foi salvo no localStorage pelo
+      // submitLead() e será reenviado depois. Não mostramos nada ao usuário —
+      // ele segue direto pro Zenhub.
 
       setDone(true);
       // Abre o link do grupo — comportamento principal: nova aba
