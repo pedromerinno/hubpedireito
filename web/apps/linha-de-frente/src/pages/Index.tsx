@@ -186,7 +186,7 @@ const Index = () => {
       {/* ─────────── FULL-BLEED · DRONE MAR BRASIL ─────────── */}
       <div ref={droneRef}>
       <FullBleedImage
-        src="/images/img-01.png"
+        src="/images/img-01.webp"
         videoSrc="/videos/drone-mar-brasil.mp4"
         alt="Vista aérea de drone sobre o mar azul do Brasil"
         aspectClass="aspect-[16/9] sm:aspect-[2.4/1]"
