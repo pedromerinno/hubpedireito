@@ -217,6 +217,77 @@ Mesmo lugar → Add IP → **Allow** (ou **Whitelist**).
 
 ---
 
+## 📨 Form de captura de leads
+
+Pipeline: **CTA → Modal (Nome/Email/Telefone) → POST `/api/lead` (Pages Function) → Turnstile verify + repasse → webhook n8n → Zenhub abre em nova aba.**
+
+### Env vars no projeto CF Pages (production)
+
+| Var | Tipo | Descrição |
+|---|---|---|
+| `N8N_WEBHOOK_URL` | plain | URL do webhook n8n (`https://webhook.destra.work/webhook/pd-captacao`) |
+| `N8N_AUTH_SECRET` | secret | Valor do header `auth` que o n8n exige |
+| `TURNSTILE_SECRET` | secret | Secret Key do Turnstile (verificação server-side) |
+| `VITE_TURNSTILE_SITEKEY` | plain | Site Key do Turnstile (injetado no bundle do front) |
+
+Ajustar via dashboard: https://dash.cloudflare.com/$CF_ACCOUNT_ID/pages/view/linha-de-frente/settings/environment-variables
+
+> **Atenção:** mudar `VITE_TURNSTILE_SITEKEY` exige **rebuild** (env injetada em build-time). Re-rodar GH Actions ou push qualquer commit no branch.
+
+### GitHub secrets exigidos
+- `CF_API_TOKEN`, `CF_ACCOUNT_ID` (deploy)
+- `VITE_TURNSTILE_SITEKEY` (build-time pro Vite)
+
+### Smoke test do endpoint
+```bash
+# 405 esperado (GET não permitido)
+curl -sI https://lancamento.usepedireito.com.br/api/lead -H "User-Agent: Mozilla/5.0"
+
+# CORS preflight de origin válida → 204 + ACL headers
+curl -sI -X OPTIONS https://lancamento.usepedireito.com.br/api/lead \
+  -H "Origin: https://lancamento.usepedireito.com.br" -H "User-Agent: Mozilla/5.0"
+
+# 400 esperado (corpo vazio)
+curl -X POST https://lancamento.usepedireito.com.br/api/lead \
+  -H "Origin: https://lancamento.usepedireito.com.br" -H "Content-Type: application/json" \
+  -H "User-Agent: Mozilla/5.0" -d '{}'
+
+# 403 esperado (origin malicioso)
+curl -X POST https://lancamento.usepedireito.com.br/api/lead \
+  -H "Origin: https://malicious.example" -H "Content-Type: application/json" \
+  -H "User-Agent: Mozilla/5.0" -d '{}'
+```
+
+### Códigos de erro do `/api/lead`
+- `400 nome inválido / email inválido / telefone inválido / captcha ausente` — validação
+- `403 origin not allowed / captcha rejeitado` — bot ou CORS bypass
+- `502 captcha verify failed / upstream unreachable / upstream error` — Turnstile ou n8n fora do ar
+- `200 {ok: true}` — lead persistido
+
+### Falha no n8n não perde lead
+O cliente faz **2 retries** com backoff exponencial. Se ainda assim falhar, salva o payload em `localStorage["pd_lead_buffer_v1"]` e abre o Zenhub. No próximo submit bem-sucedido (`flushBufferedLeads()`) os pendentes são reenviados.
+
+### Ajustar URL do webhook n8n em emergência
+```bash
+source ~/.cloudflare/ids.env
+TOKEN=$(cat ~/.cloudflare/api-token | tr -d '\n\r ')
+
+curl -X PATCH "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects/linha-de-frente" \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{
+    "deployment_configs": {
+      "production": {
+        "env_vars": {
+          "N8N_WEBHOOK_URL": {"type":"plain_text","value":"https://NOVA-URL/webhook"}
+        }
+      }
+    }
+  }'
+```
+> Mudança de env var no CF Pages **só aplica em deploys novos**. Faça um redeploy manual via dashboard ou um push no branch.
+
+---
+
 ## 🗂️ Referências
 
 - Plan original: `~/.claude/plans/preciso-hospedar-uma-c-pia-luminous-waterfall.md`
