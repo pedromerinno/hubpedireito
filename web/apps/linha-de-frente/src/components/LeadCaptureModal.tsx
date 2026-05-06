@@ -177,12 +177,22 @@ export function LeadCaptureModal() {
 
   const onSubmit = form.handleSubmit(async (values) => {
     if (values.hp_url) return; // honeypot — bot
+
+    // CRÍTICO (mobile): pré-abre a aba do Zenhub SÍNCRONO dentro do gesto do
+    // clique. Browsers mobile (iOS Safari, Chrome iOS, Android) bloqueiam
+    // window.open chamado depois de qualquer await — sai da call stack do
+    // gesto e vira "popup não solicitado". Abrindo já com a URL final, se
+    // o popup pegar, sucesso garantido. Se for bloqueado (popup === null),
+    // fallback pra navegação na mesma aba mais abaixo.
+    const popup = window.open(whatsappInviteUrl, "_blank", "noopener,noreferrer");
+
     setSubmitting(true);
     try {
       let token = "";
       try {
         token = await ensureTurnstileToken();
       } catch {
+        if (popup && !popup.closed) popup.close();
         toast.error("Não conseguimos validar você. Tenta de novo?");
         setSubmitting(false);
         return;
@@ -202,12 +212,19 @@ export function LeadCaptureModal() {
       // ele segue direto pro Zenhub.
 
       setDone(true);
-      // Abre o link do grupo — comportamento principal: nova aba
-      window.open(whatsappInviteUrl, "_blank", "noopener,noreferrer");
+
+      // Garante o redirecionamento. Caso o popup tenha sido bloqueado pelo
+      // browser (mobile com popup blocker, modo privado etc.), navega na
+      // mesma aba como fallback bombproof — usuário SEMPRE chega no Zenhub.
+      if (!popup || popup.closed) {
+        window.location.assign(whatsappInviteUrl);
+        return; // não fechamos o modal — a página vai navegar fora
+      }
 
       // Fecha modal após beat curto pro usuário ver o estado de sucesso
       setTimeout(() => close(), 900);
     } catch (err) {
+      if (popup && !popup.closed) popup.close();
       toast.error("Algo deu errado. Tenta de novo em alguns segundos.");
       // eslint-disable-next-line no-console
       console.error("[lead-capture] submit error", err);
