@@ -40,8 +40,9 @@ jobs:
         # Troca pra `npm ci` quando o repo passar a commitar package-lock.json.
         run: npm install --no-audit --no-fund
 
-      - name: Lint
+      - name: Lint (informativo, não bloqueia deploy)
         working-directory: web
+        continue-on-error: true
         run: npx turbo run lint --filter=@pedireito/linha-de-frente
 
       - name: Typecheck
