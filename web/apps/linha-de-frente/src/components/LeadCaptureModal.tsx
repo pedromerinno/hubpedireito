@@ -8,6 +8,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CtaButton } from "@/components/CtaButton";
 import { useLeadModal } from "@/lib/leadModal";
 import { whatsappInviteUrl } from "@/lib/whatsapp";
+import { trackLead } from "@/lib/metaPixel";
 import {
   buildPayload,
   formatPhoneBR,
@@ -206,6 +207,14 @@ export function LeadCaptureModal() {
 
       if (res.ok) {
         toast.success("Pronto! Estamos com você.");
+        // Meta Pixel: dispara Lead SOMENTE em sucesso real (não conta buffer
+        // offline) pra não inflar a métrica de conversão no Ads Manager.
+        // content_name carrega o source do CTA pra segmentar (hero-cta vs
+        // floating-cta). Sem PII no payload.
+        trackLead({
+          content_name: source,
+          content_category: "lead-capture",
+        });
       }
       // Buffer silencioso: se !res.ok, lead já foi salvo no localStorage pelo
       // submitLead() e será reenviado depois. Não mostramos nada ao usuário —
