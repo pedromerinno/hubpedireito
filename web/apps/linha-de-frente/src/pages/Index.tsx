@@ -326,7 +326,7 @@ const Index = () => {
             {[
               { n: "+480 mil", l: "Pessoas caminhando junto" },
               { n: "20 mil", l: "Pares vendidos na pré-venda" },
-              { n: "80 mil", l: "Pares prontos pro dia 14" },
+              { n: "50 mil", l: "Pares prontos pro dia 14" },
             ].map((stat) => (
               <div
                 key={stat.l}
