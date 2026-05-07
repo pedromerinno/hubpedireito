@@ -161,7 +161,7 @@ const Index = () => {
 
         <div className="font-narrow text-verde-escuro mt-8 text-base sm:text-lg leading-relaxed max-w-lg space-y-5">
           <p>
-            Em 2024, uma marca de chinelo disse, em rede nacional, pro brasileiro
+            Em 2025, uma marca de chinelo disse, em rede nacional, pro brasileiro
             não entrar em 2026 com o pé direito. Falaram pelo brasileiro sem ouvir
             o brasileiro. Foram canceladas. Milhões rasgaram o chinelo.
           </p>
