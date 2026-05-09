@@ -4,7 +4,8 @@
 // 2. Valida Turnstile token contra a CF
 // 3. Re-valida payload (defesa em profundidade vs front comprometido)
 // 4. Encaminha pra capt-api (VPS Hetzner) como destino primário
-// 5. Encaminha pro n8n como cópia (fallback ou paralelo conforme estratégia)
+// 5. Se capt-api falhar, encaminha direto pro n8n com `fallback_reason`
+//    pra disparar re-sync no n8n (POST /v1/leads/import com external_id).
 //
 // Env vars necessárias (CF Pages → Settings → Environment Variables):
 //   CAPT_API_URL           https://capt-api.usepedireito.com.br/v1/leads
@@ -22,11 +23,14 @@ interface Env {
   CAPT_API_SECRET: string;
 }
 
-// Período de coexistência: enquanto true, o n8n recebe TODA request
-// (mesmo que a capt-api responda OK) pra confirmar paridade. Após N dias
-// de validação, mudar pra `!captOk` (n8n só recebe em caso de falha) e
-// depois pra `false` (capt-api faz relay async pelo backend).
-const FALLBACK_TO_N8N_ALWAYS = true;
+// Estratégia: capt-api é o destino primário. Se ela falhar (timeout/5xx),
+// chamamos o n8n diretamente como fallback, marcando o payload com
+// `fallback_reason` pra o n8n disparar re-sync de volta pra capt-api
+// (via /v1/leads/import com external_id idempotente).
+//
+// Quando capt-api responde OK, o relay pro n8n é feito ASSÍNCRONAMENTE
+// pelo worker `src/n8n-relay.ts` da própria capt-api — não re-postamos
+// daqui pra evitar duplicar entradas no n8n.
 
 const ALLOWED_ORIGINS = new Set([
   "https://lancamento.usepedireito.com.br",
@@ -186,10 +190,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     console.log(JSON.stringify({ msg: "capt_api_failed", error: captError }));
   }
 
-  // ── Fallback / cópia n8n ─────────────────────────────────────────────────
-  // Durante o período de coexistência (FALLBACK_TO_N8N_ALWAYS = true), o n8n
-  // recebe TUDO pra confirmar paridade com a capt-api. Depois muda a estratégia.
-  const shouldHitN8n = FALLBACK_TO_N8N_ALWAYS || !captOk;
+  // ── Fallback n8n: SÓ chama se capt-api falhou ────────────────────────────
+  // Marca o payload com `fallback_reason` pra o IF do n8n distinguir e
+  // disparar re-sync via POST /v1/leads/import (idempotente por external_id).
+  const shouldHitN8n = !captOk;
   let n8nOk = false;
   if (shouldHitN8n) {
     try {
@@ -198,9 +202,14 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         headers: {
           "content-type": "application/json",
           auth: env.N8N_AUTH_SECRET,
-          "user-agent": "pd-cf-pages-fn/2.0",
+          "user-agent": "pd-cf-pages-fn/2.1",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          fallback_reason: "capt_api_unreachable",
+          capt_api_attempted_at: new Date().toISOString(),
+          capt_api_error: captError ?? "unknown",
+        }),
         signal: AbortSignal.timeout(5000),
       });
       n8nOk = n8nResp.ok;
