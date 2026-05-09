@@ -3,10 +3,13 @@
 // 1. Recebe POST do front em /api/lead (mesma origem do site)
 // 2. Valida Turnstile token contra a CF
 // 3. Re-valida payload (defesa em profundidade vs front comprometido)
-// 4. Repassa pro webhook n8n com o header `auth` secreto
+// 4. Encaminha pra capt-api (VPS Hetzner) como destino primário
+// 5. Encaminha pro n8n como cópia (fallback ou paralelo conforme estratégia)
 //
 // Env vars necessárias (CF Pages → Settings → Environment Variables):
-//   N8N_WEBHOOK_URL        URL completa do webhook n8n
+//   CAPT_API_URL           https://capt-api.usepedireito.com.br/v1/leads
+//   CAPT_API_SECRET        valor do header `X-Captacao-Secret` esperado pela capt-api
+//   N8N_WEBHOOK_URL        URL completa do webhook n8n (fallback/paralelo)
 //   N8N_AUTH_SECRET        valor do header `auth` esperado pelo n8n
 //   TURNSTILE_SECRET       Secret Key do Turnstile site
 
@@ -14,7 +17,16 @@ interface Env {
   N8N_WEBHOOK_URL: string;
   N8N_AUTH_SECRET: string;
   TURNSTILE_SECRET: string;
+  // Captação primária (VPS Hetzner via Cloudflare proxy)
+  CAPT_API_URL: string;
+  CAPT_API_SECRET: string;
 }
+
+// Período de coexistência: enquanto true, o n8n recebe TODA request
+// (mesmo que a capt-api responda OK) pra confirmar paridade. Após N dias
+// de validação, mudar pra `!captOk` (n8n só recebe em caso de falha) e
+// depois pra `false` (capt-api faz relay async pelo backend).
+const FALLBACK_TO_N8N_ALWAYS = true;
 
 const ALLOWED_ORIGINS = new Set([
   "https://lancamento.usepedireito.com.br",
@@ -148,34 +160,71 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     ts,
   };
 
-  let n8nResp: Response;
+  // ── Destino primário: capt-api (VPS Hetzner) ─────────────────────────────
+  let captOk = false;
+  let captError: string | undefined;
   try {
-    n8nResp = await fetch(env.N8N_WEBHOOK_URL, {
+    const captResp = await fetch(env.CAPT_API_URL, {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        auth: env.N8N_AUTH_SECRET,
-        "user-agent": "pd-cf-pages-fn/1.0",
+        "X-Captacao-Secret": env.CAPT_API_SECRET,
+        "user-agent": "pd-cf-pages-fn/2.0",
       },
       body: JSON.stringify(payload),
-      // CF Workers: timeout total da subrequest é ~30s; nada a configurar
+      signal: AbortSignal.timeout(8000),
     });
+    if (captResp.ok) {
+      captOk = true;
+    } else {
+      const body = await captResp.text().catch(() => "");
+      captError = `status ${captResp.status} ${body.slice(0, 200)}`;
+      console.log(JSON.stringify({ msg: "capt_api_non_ok", status: captResp.status }));
+    }
   } catch (err) {
+    captError = err instanceof Error ? err.message : String(err);
+    console.log(JSON.stringify({ msg: "capt_api_failed", error: captError }));
+  }
+
+  // ── Fallback / cópia n8n ─────────────────────────────────────────────────
+  // Durante o período de coexistência (FALLBACK_TO_N8N_ALWAYS = true), o n8n
+  // recebe TUDO pra confirmar paridade com a capt-api. Depois muda a estratégia.
+  const shouldHitN8n = FALLBACK_TO_N8N_ALWAYS || !captOk;
+  let n8nOk = false;
+  if (shouldHitN8n) {
+    try {
+      const n8nResp = await fetch(env.N8N_WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          auth: env.N8N_AUTH_SECRET,
+          "user-agent": "pd-cf-pages-fn/2.0",
+        },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(5000),
+      });
+      n8nOk = n8nResp.ok;
+      if (!n8nOk) {
+        const body = await n8nResp.text().catch(() => "");
+        console.log(JSON.stringify({ msg: "n8n_non_ok", status: n8nResp.status, body: body.slice(0, 200) }));
+      }
+    } catch (err) {
+      console.log(JSON.stringify({
+        msg: "n8n_failed",
+        error: err instanceof Error ? err.message : String(err),
+      }));
+    }
+  }
+
+  // Se ambos falharam, retorna 502 — buffer offline do client absorve.
+  // Se pelo menos 1 deu OK, retorna 200 (lead persistido em algum lugar).
+  if (!captOk && !n8nOk) {
     return json(
-      { error: "upstream unreachable", detail: err instanceof Error ? err.message : "?" },
+      { error: "all upstreams failed", detail: captError ?? "unknown" },
       502,
       cors,
     );
   }
 
-  if (!n8nResp.ok) {
-    const text = await n8nResp.text().catch(() => "");
-    return json(
-      { error: "upstream error", status: n8nResp.status, body: text.slice(0, 200) },
-      502,
-      cors,
-    );
-  }
-
-  return json({ ok: true }, 200, cors);
+  return json({ ok: true, capt: captOk, n8n: n8nOk }, 200, cors);
 };
