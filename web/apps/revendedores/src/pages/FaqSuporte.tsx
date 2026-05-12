@@ -15,7 +15,7 @@ const FAQ_ITEMS = [
     id: "horario",
     question: "Quando o carrinho abre?",
     answer:
-      "O carrinho abre às segundas-feiras às 9h (horário de Brasília). Não há prorrogação — fique de olho na contagem regressiva para não perder o horário.",
+      "O carrinho abre às segundas-feiras às 9h (horário de Brasília). Não há prorrogação. Fique de olho na contagem regressiva para não perder o horário.",
   },
   {
     id: "unidades",

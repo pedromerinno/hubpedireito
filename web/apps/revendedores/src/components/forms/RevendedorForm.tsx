@@ -1,0 +1,286 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { FormSection } from "./FormSection";
+import { FormSuccess } from "./FormSuccess";
+import { FilterQuestion } from "./FilterQuestion";
+import { RadioCardGroup } from "./RadioCardGroup";
+import { TextField, TextareaField, SelectField, ESTADOS_BR } from "./Field";
+import { getOrigem } from "@/lib/origem";
+import { getPorta } from "@/lib/portas";
+
+const CANAL_OPTIONS = [
+  { value: "fisica", label: "Loja física própria (mesmo que pequena)" },
+  { value: "online", label: "Loja online / e-commerce próprio" },
+  { value: "redes", label: "Redes sociais e WhatsApp" },
+  { value: "eventos", label: "Eventos, igrejas, comunidades" },
+  { value: "porta", label: "Porta a porta / sacoleira" },
+  { value: "indef", label: "Ainda não decidi" },
+] as const;
+
+type CanalValue = (typeof CANAL_OPTIONS)[number]["value"];
+
+const schema = z.object({
+  canalVenda: z.enum(["fisica", "online", "redes", "eventos", "porta", "indef"]),
+
+  nomeCompleto: z.string().min(1, "Campo obrigatório"),
+  email: z.string().email("E-mail inválido"),
+  whatsapp: z.string().min(8, "WhatsApp obrigatório"),
+  cidade: z.string().min(1, "Campo obrigatório"),
+  estado: z.string().min(1, "Selecione um estado"),
+  cnpjStatus: z.enum(["sim", "nao", "mei"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+
+  jaVende: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  oQueVende: z.string().optional(),
+  tempoVendendo: z.string().optional(),
+  clientelaAtiva: z.string().optional(),
+
+  volumeMensal: z.enum(["20", "50", "100", "300", "300+"], {
+    errorMap: () => ({ message: "Selecione um volume" }),
+  }),
+  espacoEstoque: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  exclusividade: z.enum(["exclusivo", "junto"], {
+    errorMap: () => ({ message: "Selecione uma opção" }),
+  }),
+
+  motivacao: z.string().min(100, "Mínimo de 100 caracteres"),
+  comoConheceu: z.string().min(1, "Campo obrigatório"),
+  redeOuComunidade: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof schema>;
+
+export function RevendedorForm() {
+  const porta = getPorta("revendedor");
+  const [canal, setCanal] = useState<CanalValue | undefined>(undefined);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {} as FormValues,
+  });
+
+  function handleCanalChange(value: CanalValue) {
+    setCanal(value);
+    form.setValue("canalVenda", value as FormValues["canalVenda"], { shouldValidate: true });
+  }
+
+  async function onSubmit(values: FormValues) {
+    setError(null);
+    setSubmitting(true);
+    try {
+      const origem = getOrigem();
+      const payload = {
+        nomeCompleto: values.nomeCompleto,
+        empresaLoja: "",
+        cnpj: values.cnpjStatus === "nao" ? "" : values.cnpjStatus,
+        cidadeEstado: `${values.cidade}, ${values.estado}`,
+        telefoneWhatsapp: values.whatsapp,
+        email: values.email,
+        site: values.redeOuComunidade || "",
+        instagramRedes: values.redeOuComunidade || "",
+        tempoMercado: values.tempoVendendo || "",
+        entendeProposito: undefined as undefined,
+        vendeCalcadosVestuario: values.jaVende,
+        formaVenda:
+          values.canalVenda === "fisica"
+            ? "fisica"
+            : values.canalVenda === "online"
+              ? "online"
+              : values.canalVenda === "redes"
+                ? "marketplace"
+                : values.canalVenda === "porta"
+                  ? "porta"
+                  : "mistos",
+        oQueChamouAtencao: values.motivacao,
+        seguePadroesMarca: "sim",
+        paresPorMes: values.volumeMensal,
+        // metadados úteis
+        canalVenda: values.canalVenda,
+        cnpjStatus: values.cnpjStatus,
+        oQueVende: values.oQueVende,
+        clientelaAtiva: values.clientelaAtiva,
+        espacoEstoque: values.espacoEstoque,
+        exclusividade: values.exclusividade,
+        comoConheceu: values.comoConheceu,
+        origem,
+      };
+
+      const res = await fetch("/api/submit-revendedor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setError(json.error || "Falha ao enviar. Tente novamente.");
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("Erro de conexão. Tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <FormSuccess
+        porta={porta}
+        proximoPasso="Vamos te enviar o kit de revenda, condições e ativação no próximo lote do Período Fundador. Fica atento ao WhatsApp."
+        prazoContato="Retorno em até 3 dias úteis."
+      />
+    );
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+        <FilterQuestion
+          eyebrow="Filtro de entrada"
+          question="Como você pretende vender a Pé Direito?"
+          options={CANAL_OPTIONS as unknown as { value: CanalValue; label: string }[]}
+          value={canal}
+          onChange={handleCanalChange}
+        />
+
+        {canal && (
+          <>
+            <FormSection number={1} title="Identidade">
+              <TextField control={form.control} name="nomeCompleto" label="Nome completo" placeholder="Seu nome" />
+              <TextField control={form.control} name="email" label="E-mail" type="email" placeholder="seu@email.com" />
+              <TextField control={form.control} name="whatsapp" label="WhatsApp" placeholder="(00) 00000-0000" inputMode="tel" />
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_180px] gap-4">
+                <TextField control={form.control} name="cidade" label="Cidade" placeholder="Sua cidade" />
+                <SelectField control={form.control} name="estado" label="Estado" placeholder="UF" options={ESTADOS_BR} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-700 mb-2">Tem CNPJ?</p>
+                <RadioCardGroup
+                  layout="grid"
+                  options={[
+                    { value: "sim", label: "Sim, CNPJ ativo" },
+                    { value: "mei", label: "MEI" },
+                    { value: "nao", label: "Não tenho" },
+                  ]}
+                  value={form.watch("cnpjStatus")}
+                  onChange={(v) => form.setValue("cnpjStatus", v as FormValues["cnpjStatus"], { shouldValidate: true })}
+                />
+              </div>
+            </FormSection>
+
+            <FormSection number={2} title="Operação atual">
+              <div>
+                <p className="text-sm font-semibold text-gray-700 mb-2">Você já vende algum produto hoje?</p>
+                <RadioCardGroup
+                  layout="grid"
+                  options={[
+                    { value: "sim", label: "Sim" },
+                    { value: "nao", label: "Não" },
+                  ]}
+                  value={form.watch("jaVende")}
+                  onChange={(v) => form.setValue("jaVende", v as "sim" | "nao", { shouldValidate: true })}
+                />
+              </div>
+              <TextField control={form.control} name="oQueVende" label="Se sim, o quê?" placeholder="Ex: roupas, cosméticos..." optional />
+              <TextField control={form.control} name="tempoVendendo" label="Há quanto tempo vende?" placeholder="Ex: 3 anos" optional />
+              <TextField
+                control={form.control}
+                name="clientelaAtiva"
+                label="Tem clientela ativa? Quantas pessoas compram de você regularmente?"
+                placeholder="Estimativa, ex: 80"
+                optional
+              />
+            </FormSection>
+
+            <FormSection number={3} title="Capacidade">
+              <div>
+                <p className="text-sm font-semibold text-gray-700 mb-2">Volume mensal estimado de compra (pares)</p>
+                <RadioCardGroup
+                  options={[
+                    { value: "20", label: "Até 20 pares" },
+                    { value: "50", label: "20 a 50 pares" },
+                    { value: "100", label: "50 a 100 pares" },
+                    { value: "300", label: "100 a 300 pares" },
+                    { value: "300+", label: "Acima de 300 pares" },
+                  ]}
+                  value={form.watch("volumeMensal")}
+                  onChange={(v) => form.setValue("volumeMensal", v as FormValues["volumeMensal"], { shouldValidate: true })}
+                />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-700 mb-2">Tem espaço para estoque?</p>
+                <RadioCardGroup
+                  layout="grid"
+                  options={[
+                    { value: "sim", label: "Sim" },
+                    { value: "nao", label: "Não" },
+                  ]}
+                  value={form.watch("espacoEstoque")}
+                  onChange={(v) => form.setValue("espacoEstoque", v as "sim" | "nao", { shouldValidate: true })}
+                />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-700 mb-2">Vai vender exclusivamente Pé Direito?</p>
+                <RadioCardGroup
+                  options={[
+                    { value: "exclusivo", label: "Só Pé Direito" },
+                    { value: "junto", label: "Junto com outros produtos" },
+                  ]}
+                  value={form.watch("exclusividade")}
+                  onChange={(v) => form.setValue("exclusividade", v as FormValues["exclusividade"], { shouldValidate: true })}
+                />
+              </div>
+            </FormSection>
+
+            <FormSection number={4} title="Alinhamento com a marca">
+              <TextareaField
+                control={form.control}
+                name="motivacao"
+                label="Por que quer revender Pé Direito?"
+                placeholder="Conte um pouco. Mínimo de 100 caracteres."
+                minLength={100}
+                showCounter
+              />
+              <TextField
+                control={form.control}
+                name="comoConheceu"
+                label="Como conheceu a marca?"
+                placeholder="Ex: Nikolas, redes, indicação..."
+              />
+              <TextField
+                control={form.control}
+                name="redeOuComunidade"
+                label="Tem alguma rede social ou comunidade onde já divulga seus produtos?"
+                placeholder="@usuario, link ou nome do grupo"
+                optional
+              />
+            </FormSection>
+
+            {error && (
+              <p className="text-sm font-medium text-destructive" role="alert">
+                {error}
+              </p>
+            )}
+
+            <div className="pt-2 flex justify-center">
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="rounded-full px-10 py-6 bg-[#2B9402] hover:bg-[#2B9402]/90 text-[#FEBF00] font-semibold disabled:opacity-70"
+              >
+                {submitting ? "Enviando..." : "Quero ser revendedor"}
+              </Button>
+            </div>
+          </>
+        )}
+      </form>
+    </Form>
+  );
+}

@@ -13,6 +13,7 @@
     "./types": "./src/types.ts",
     "./hooks": "./src/hooks/index.ts",
     "./api/submit-revendedor": "./src/api/submit-revendedor.ts",
+    "./api/submit-lead": "./src/api/submit-lead.ts",
     "./api/revendedores/list": "./src/api/revendedores/list.ts",
     "./api/revendedores/update": "./src/api/revendedores/update.ts"
   },
