@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { FormSection } from "./FormSection";
 import { FormSuccess } from "./FormSuccess";
 import { FilterQuestion } from "./FilterQuestion";
-import { RadioCardGroup } from "./RadioCardGroup";
+import { RadioCardField } from "./RadioCardGroup";
+import { FormErrorBanner } from "./FormErrorBanner";
 import { TextField, TextareaField, SelectField, ESTADOS_BR } from "./Field";
 import { getOrigem } from "@/lib/origem";
+import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import { getPorta } from "@/lib/portas";
 
 const CANAL_OPTIONS = [
@@ -64,6 +66,7 @@ export function RevendedorForm() {
     resolver: zodResolver(schema),
     defaultValues: {} as FormValues,
   });
+  const onInvalid = useScrollToFirstError<FormValues>();
 
   function handleCanalChange(value: CanalValue) {
     setCanal(value);
@@ -141,7 +144,7 @@ export function RevendedorForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 sm:space-y-8">
         <FilterQuestion
           eyebrow="Filtro de entrada"
           question="Como você pretende vender a Pé Direito?"
@@ -160,34 +163,30 @@ export function RevendedorForm() {
                 <TextField control={form.control} name="cidade" label="Cidade" placeholder="Sua cidade" />
                 <SelectField control={form.control} name="estado" label="Estado" placeholder="UF" options={ESTADOS_BR} />
               </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Tem CNPJ?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim, CNPJ ativo" },
-                    { value: "mei", label: "MEI" },
-                    { value: "nao", label: "Não tenho" },
-                  ]}
-                  value={form.watch("cnpjStatus")}
-                  onChange={(v) => form.setValue("cnpjStatus", v as FormValues["cnpjStatus"], { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="cnpjStatus"
+                question="Tem CNPJ?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim, CNPJ ativo" },
+                  { value: "mei", label: "MEI" },
+                  { value: "nao", label: "Não tenho" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={2} title="Operação atual">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Você já vende algum produto hoje?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("jaVende")}
-                  onChange={(v) => form.setValue("jaVende", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="jaVende"
+                question="Você já vende algum produto hoje?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
               <TextField control={form.control} name="oQueVende" label="Se sim, o quê?" placeholder="Ex: roupas, cosméticos..." optional />
               <TextField control={form.control} name="tempoVendendo" label="Há quanto tempo vende?" placeholder="Ex: 3 anos" optional />
               <TextField
@@ -200,43 +199,37 @@ export function RevendedorForm() {
             </FormSection>
 
             <FormSection number={3} title="Capacidade">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Volume mensal estimado de compra (pares)</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "20", label: "Até 20 pares" },
-                    { value: "50", label: "20 a 50 pares" },
-                    { value: "100", label: "50 a 100 pares" },
-                    { value: "300", label: "100 a 300 pares" },
-                    { value: "300+", label: "Acima de 300 pares" },
-                  ]}
-                  value={form.watch("volumeMensal")}
-                  onChange={(v) => form.setValue("volumeMensal", v as FormValues["volumeMensal"], { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Tem espaço para estoque?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("espacoEstoque")}
-                  onChange={(v) => form.setValue("espacoEstoque", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Vai vender exclusivamente Pé Direito?</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "exclusivo", label: "Só Pé Direito" },
-                    { value: "junto", label: "Junto com outros produtos" },
-                  ]}
-                  value={form.watch("exclusividade")}
-                  onChange={(v) => form.setValue("exclusividade", v as FormValues["exclusividade"], { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="volumeMensal"
+                question="Volume mensal estimado de compra (pares)"
+                options={[
+                  { value: "20", label: "Até 20 pares" },
+                  { value: "50", label: "20 a 50 pares" },
+                  { value: "100", label: "50 a 100 pares" },
+                  { value: "300", label: "100 a 300 pares" },
+                  { value: "300+", label: "Acima de 300 pares" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="espacoEstoque"
+                question="Tem espaço para estoque?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="exclusividade"
+                question="Vai vender exclusivamente Pé Direito?"
+                options={[
+                  { value: "exclusivo", label: "Só Pé Direito" },
+                  { value: "junto", label: "Junto com outros produtos" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={4} title="Alinhamento com a marca">
@@ -263,11 +256,7 @@ export function RevendedorForm() {
               />
             </FormSection>
 
-            {error && (
-              <p className="text-sm font-medium text-destructive" role="alert">
-                {error}
-              </p>
-            )}
+            <FormErrorBanner errors={form.formState.errors} submitError={error} />
 
             <div className="pt-2 flex justify-center">
               <Button

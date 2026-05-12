@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { FormSection } from "./FormSection";
 import { FormSuccess } from "./FormSuccess";
 import { FilterQuestion } from "./FilterQuestion";
-import { RadioCardGroup } from "./RadioCardGroup";
+import { RadioCardField } from "./RadioCardGroup";
+import { FormErrorBanner } from "./FormErrorBanner";
 import { TextField, TextareaField } from "./Field";
 import { useLeadSubmit } from "@/hooks/useLeadSubmit";
+import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import { getPorta } from "@/lib/portas";
 
 const ORCAMENTO_OPTIONS = [
@@ -63,6 +65,7 @@ export function PatrocinadorForm() {
   });
 
   const { state, submit } = useLeadSubmit<FormValues>({ tipo: "patrocinador" });
+  const onInvalid = useScrollToFirstError<FormValues>();
 
   function handleOrcamentoChange(value: OrcamentoValue) {
     setOrcamento(value);
@@ -86,7 +89,7 @@ export function PatrocinadorForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 sm:space-y-8">
         <FilterQuestion
           eyebrow="Filtro de entrada"
           question="Qual a faixa anual de orçamento de patrocínio que sua empresa considera para esta parceria?"
@@ -143,33 +146,29 @@ export function PatrocinadorForm() {
                 label="Tipo de ativação desejada"
                 placeholder="Logo em produto, presença em campanha, co-branding, evento físico..."
               />
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Faixa de orçamento anual</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "500k+", label: "Acima de R$ 500 mil" },
-                    { value: "100-500k", label: "Entre R$ 100 mil e R$ 500 mil" },
-                    { value: "30-100k", label: "Entre R$ 30 mil e R$ 100 mil" },
-                    { value: "<30k", label: "Abaixo de R$ 30 mil" },
-                  ]}
-                  value={form.watch("orcamentoAnual")}
-                  onChange={(v) => form.setValue("orcamentoAnual", v as FormValues["orcamentoAnual"], { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Duração desejada</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "pontual", label: "Campanha pontual" },
-                    { value: "6m", label: "6 meses" },
-                    { value: "12m", label: "12 meses" },
-                    { value: "multianual", label: "Multianual" },
-                  ]}
-                  value={form.watch("duracao")}
-                  onChange={(v) => form.setValue("duracao", v as FormValues["duracao"], { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="orcamentoAnual"
+                question="Faixa de orçamento anual"
+                options={[
+                  { value: "500k+", label: "Acima de R$ 500 mil" },
+                  { value: "100-500k", label: "Entre R$ 100 mil e R$ 500 mil" },
+                  { value: "30-100k", label: "Entre R$ 30 mil e R$ 100 mil" },
+                  { value: "<30k", label: "Abaixo de R$ 30 mil" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="duracao"
+                question="Duração desejada"
+                layout="grid"
+                options={[
+                  { value: "pontual", label: "Campanha pontual" },
+                  { value: "6m", label: "6 meses" },
+                  { value: "12m", label: "12 meses" },
+                  { value: "multianual", label: "Multianual" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={4} title="Sinergia">
@@ -203,27 +202,19 @@ export function PatrocinadorForm() {
             </FormSection>
 
             <FormSection number={5} title="Próximo passo">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">
-                  Disponibilidade para apresentação formal nas próximas 3 semanas?
-                </p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim, tenho agenda" },
-                    { value: "nao", label: "Prefiro mais tempo" },
-                  ]}
-                  value={form.watch("apresentacao")}
-                  onChange={(v) => form.setValue("apresentacao", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="apresentacao"
+                question="Disponibilidade para apresentação formal nas próximas 3 semanas?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim, tenho agenda" },
+                  { value: "nao", label: "Prefiro mais tempo" },
+                ]}
+              />
             </FormSection>
 
-            {state.error && (
-              <p className="text-sm font-medium text-destructive" role="alert">
-                {state.error}
-              </p>
-            )}
+            <FormErrorBanner errors={form.formState.errors} submitError={state.error} />
 
             <div className="pt-2 flex justify-center">
               <Button

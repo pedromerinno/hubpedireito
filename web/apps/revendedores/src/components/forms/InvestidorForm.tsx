@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { FormSection } from "./FormSection";
 import { FormSuccess } from "./FormSuccess";
 import { FilterQuestion } from "./FilterQuestion";
-import { RadioCardGroup } from "./RadioCardGroup";
+import { RadioCardField } from "./RadioCardGroup";
+import { FormErrorBanner } from "./FormErrorBanner";
 import { TextField, TextareaField } from "./Field";
 import { useLeadSubmit } from "@/hooks/useLeadSubmit";
+import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import { getPorta } from "@/lib/portas";
 
 const TICKET_OPTIONS = [
@@ -65,6 +67,7 @@ export function InvestidorForm() {
   });
 
   const { state, submit } = useLeadSubmit<FormValues>({ tipo: "investidor" });
+  const onInvalid = useScrollToFirstError<FormValues>();
 
   function handleTicketChange(value: TicketValue) {
     setTicket(value);
@@ -89,7 +92,7 @@ export function InvestidorForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 sm:space-y-8">
         <FilterQuestion
           eyebrow="Filtro de entrada"
           question="Qual a faixa de ticket que você considera para esta oportunidade?"
@@ -104,48 +107,40 @@ export function InvestidorForm() {
               <TextField control={form.control} name="nomeCompleto" label="Nome completo" placeholder="Seu nome" />
               <TextField control={form.control} name="email" label="E-mail" type="email" placeholder="seu@email.com" />
               <TextField control={form.control} name="whatsapp" label="WhatsApp" placeholder="(00) 00000-0000" inputMode="tel" />
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Pessoa física ou jurídica?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "pf", label: "Pessoa física" },
-                    { value: "pj", label: "Pessoa jurídica" },
-                  ]}
-                  value={form.watch("pfPj")}
-                  onChange={(v) => form.setValue("pfPj", v as "pf" | "pj", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="pfPj"
+                question="Pessoa física ou jurídica?"
+                layout="grid"
+                options={[
+                  { value: "pf", label: "Pessoa física" },
+                  { value: "pj", label: "Pessoa jurídica" },
+                ]}
+              />
               <TextField control={form.control} name="cidadePais" label="Cidade e país" placeholder="Ex: São Paulo, Brasil" />
             </FormSection>
 
             <FormSection number={2} title="Perfil de investidor">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Você se considera investidor qualificado?</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "1mm+", label: "Patrimônio acima de R$ 1 milhão" },
-                    { value: "300-1mm", label: "Patrimônio entre R$ 300 mil e R$ 1 milhão" },
-                    { value: "<300", label: "Patrimônio abaixo de R$ 300 mil" },
-                  ]}
-                  value={form.watch("qualificado")}
-                  onChange={(v) => form.setValue("qualificado", v as FormValues["qualificado"], { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">
-                  Já investiu em empresas privadas (anjo, venture, PE, search fund, family office)?
-                </p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("jaInvestiu")}
-                  onChange={(v) => form.setValue("jaInvestiu", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="qualificado"
+                question="Você se considera investidor qualificado?"
+                options={[
+                  { value: "1mm+", label: "Patrimônio acima de R$ 1 milhão" },
+                  { value: "300-1mm", label: "Patrimônio entre R$ 300 mil e R$ 1 milhão" },
+                  { value: "<300", label: "Patrimônio abaixo de R$ 300 mil" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="jaInvestiu"
+                question="Já investiu em empresas privadas (anjo, venture, PE, search fund, family office)?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
               <TextField
                 control={form.control}
                 name="numeroOperacoes"
@@ -163,60 +158,50 @@ export function InvestidorForm() {
             </FormSection>
 
             <FormSection number={3} title="Tese de investimento">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Faixa de ticket pretendido nesta oportunidade</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "1mm+", label: "Acima de R$ 1 milhão" },
-                    { value: "500k-1mm", label: "Entre R$ 500 mil e R$ 1 milhão" },
-                    { value: "100-500k", label: "Entre R$ 100 mil e R$ 500 mil" },
-                    { value: "<100k", label: "Abaixo de R$ 100 mil" },
-                  ]}
-                  value={form.watch("ticketPretendido")}
-                  onChange={(v) =>
-                    form.setValue("ticketPretendido", v as FormValues["ticketPretendido"], { shouldValidate: true })
-                  }
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Instrumento preferido</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "equity", label: "Equity" },
-                    { value: "divida", label: "Dívida conversível" },
-                    { value: "mutuo", label: "Mútuo" },
-                    { value: "safe", label: "SAFE" },
-                    { value: "aberto", label: "Aberto a discussão" },
-                  ]}
-                  value={form.watch("instrumento")}
-                  onChange={(v) => form.setValue("instrumento", v as FormValues["instrumento"], { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Horizonte de investimento</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "3", label: "Até 3 anos" },
-                    { value: "5", label: "3 a 5 anos" },
-                    { value: "10", label: "5 a 10 anos" },
-                    { value: "longo", label: "Longo prazo" },
-                  ]}
-                  value={form.watch("horizonte")}
-                  onChange={(v) => form.setValue("horizonte", v as FormValues["horizonte"], { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Tipo de atuação que você busca</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "ativa", label: "Ativa: assento em conselho, mentoria, contribuição estratégica" },
-                    { value: "capital", label: "Só capital, sem envolvimento operacional" },
-                  ]}
-                  value={form.watch("atuacaoAtiva")}
-                  onChange={(v) => form.setValue("atuacaoAtiva", v as FormValues["atuacaoAtiva"], { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="ticketPretendido"
+                question="Faixa de ticket pretendido nesta oportunidade"
+                options={[
+                  { value: "1mm+", label: "Acima de R$ 1 milhão" },
+                  { value: "500k-1mm", label: "Entre R$ 500 mil e R$ 1 milhão" },
+                  { value: "100-500k", label: "Entre R$ 100 mil e R$ 500 mil" },
+                  { value: "<100k", label: "Abaixo de R$ 100 mil" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="instrumento"
+                question="Instrumento preferido"
+                options={[
+                  { value: "equity", label: "Equity" },
+                  { value: "divida", label: "Dívida conversível" },
+                  { value: "mutuo", label: "Mútuo" },
+                  { value: "safe", label: "SAFE" },
+                  { value: "aberto", label: "Aberto a discussão" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="horizonte"
+                question="Horizonte de investimento"
+                layout="grid"
+                options={[
+                  { value: "3", label: "Até 3 anos" },
+                  { value: "5", label: "3 a 5 anos" },
+                  { value: "10", label: "5 a 10 anos" },
+                  { value: "longo", label: "Longo prazo" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="atuacaoAtiva"
+                question="Tipo de atuação que você busca"
+                options={[
+                  { value: "ativa", label: "Ativa: assento em conselho, mentoria, contribuição estratégica" },
+                  { value: "capital", label: "Só capital, sem envolvimento operacional" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={4} title="Alinhamento">
@@ -234,42 +219,32 @@ export function InvestidorForm() {
                 label="Como conheceu a marca?"
                 placeholder="Ex: Nikolas, indicação, imprensa, redes..."
               />
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Você acompanha o Período Fundador?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim, de perto" },
-                    { value: "nao", label: "Não, agora que descobri" },
-                  ]}
-                  value={form.watch("acompanhaFundador")}
-                  onChange={(v) => form.setValue("acompanhaFundador", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="acompanhaFundador"
+                question="Você acompanha o Período Fundador?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim, de perto" },
+                  { value: "nao", label: "Não, agora que descobri" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={5} title="Próximo passo">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">
-                  Disponibilidade para uma call inicial nas próximas 2 semanas?
-                </p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim, tenho agenda" },
-                    { value: "nao", label: "Prefiro mais tempo" },
-                  ]}
-                  value={form.watch("callDisponivel")}
-                  onChange={(v) => form.setValue("callDisponivel", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="callDisponivel"
+                question="Disponibilidade para uma call inicial nas próximas 2 semanas?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim, tenho agenda" },
+                  { value: "nao", label: "Prefiro mais tempo" },
+                ]}
+              />
             </FormSection>
 
-            {state.error && (
-              <p className="text-sm font-medium text-destructive" role="alert">
-                {state.error}
-              </p>
-            )}
+            <FormErrorBanner errors={form.formState.errors} submitError={state.error} />
 
             <div className="pt-2 flex justify-center">
               <Button

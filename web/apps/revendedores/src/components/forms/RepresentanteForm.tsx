@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { FormSection } from "./FormSection";
 import { FormSuccess } from "./FormSuccess";
 import { FilterQuestion } from "./FilterQuestion";
-import { RadioCardGroup } from "./RadioCardGroup";
+import { RadioCardField } from "./RadioCardGroup";
+import { FormErrorBanner } from "./FormErrorBanner";
 import { TextField, TextareaField } from "./Field";
 import { useLeadSubmit } from "@/hooks/useLeadSubmit";
+import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import { getPorta } from "@/lib/portas";
 
 const ATUACAO_OPTIONS = [
@@ -71,6 +73,7 @@ export function RepresentanteForm() {
   });
 
   const { state, submit } = useLeadSubmit<FormValues>({ tipo: "representante" });
+  const onInvalid = useScrollToFirstError<FormValues>();
 
   function handleAtuacaoChange(value: AtuacaoValue) {
     setAtuacao(value);
@@ -93,7 +96,7 @@ export function RepresentanteForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 sm:space-y-8">
         <FilterQuestion
           eyebrow="Filtro de entrada"
           question="Você atua como representante comercial profissional hoje?"
@@ -149,42 +152,36 @@ export function RepresentanteForm() {
             </FormSection>
 
             <FormSection number={3} title="Estrutura">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Trabalha solo ou tem equipe?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "solo", label: "Solo" },
-                    { value: "equipe", label: "Tenho equipe" },
-                  ]}
-                  value={form.watch("estrutura")}
-                  onChange={(v) => form.setValue("estrutura", v as FormValues["estrutura"], { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Tem showroom ou escritório próprio?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("temShowroom")}
-                  onChange={(v) => form.setValue("temShowroom", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Possui sistema de pedidos ou catálogo digital?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("sistemaPedidos")}
-                  onChange={(v) => form.setValue("sistemaPedidos", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="estrutura"
+                question="Trabalha solo ou tem equipe?"
+                layout="grid"
+                options={[
+                  { value: "solo", label: "Solo" },
+                  { value: "equipe", label: "Tenho equipe" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="temShowroom"
+                question="Tem showroom ou escritório próprio?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="sistemaPedidos"
+                question="Possui sistema de pedidos ou catálogo digital?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={4} title="Estratégia">
@@ -202,34 +199,26 @@ export function RepresentanteForm() {
                 label="Quais redes ou grupos de lojas você consegue ativar nos primeiros 90 dias?"
                 placeholder="Ex: Grupo X, Y, Z..."
               />
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">
-                  Você representa hoje alguma marca concorrente direta da Pé Direito?
-                </p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("representaConcorrente")}
-                  onChange={(v) => form.setValue("representaConcorrente", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">
-                  Tem disponibilidade para exclusividade na categoria sandália?
-                </p>
-                <RadioCardGroup
-                  options={[
-                    { value: "sim", label: "Sim, posso assumir exclusividade" },
-                    { value: "nao", label: "Não, prefiro multi-marca" },
-                    { value: "negociar", label: "Aberto a negociar" },
-                  ]}
-                  value={form.watch("exclusividade")}
-                  onChange={(v) => form.setValue("exclusividade", v as FormValues["exclusividade"], { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="representaConcorrente"
+                question="Você representa hoje alguma marca concorrente direta da Pé Direito?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="exclusividade"
+                question="Tem disponibilidade para exclusividade na categoria sandália?"
+                options={[
+                  { value: "sim", label: "Sim, posso assumir exclusividade" },
+                  { value: "nao", label: "Não, prefiro multi-marca" },
+                  { value: "negociar", label: "Aberto a negociar" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={5} title="Referências">
@@ -248,11 +237,7 @@ export function RepresentanteForm() {
               />
             </FormSection>
 
-            {state.error && (
-              <p className="text-sm font-medium text-destructive" role="alert">
-                {state.error}
-              </p>
-            )}
+            <FormErrorBanner errors={form.formState.errors} submitError={state.error} />
 
             <div className="pt-2 flex justify-center">
               <Button

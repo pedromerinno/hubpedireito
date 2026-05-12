@@ -1,3 +1,6 @@
+import { useId } from "react";
+import type { Control, FieldValues, Path } from "react-hook-form";
+import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +28,11 @@ export function RadioCardGroup<V extends string>({
   id,
   name,
 }: RadioCardGroupProps<V>) {
+  // Namespace único por instância — evita colisão de id quando vários
+  // RadioCardGroup convivem na mesma página (mesmas options "sim"/"nao").
+  const reactId = useId();
+  const groupNs = id ?? name ?? reactId;
+
   return (
     <RadioGroup
       value={value}
@@ -37,7 +45,7 @@ export function RadioCardGroup<V extends string>({
     >
       {options.map((opt) => {
         const isSelected = value === opt.value;
-        const optId = `${id ?? name ?? "opt"}-${opt.value}`;
+        const optId = `${groupNs}-${opt.value}`;
         return (
           <label
             key={opt.value}
@@ -69,5 +77,50 @@ export function RadioCardGroup<V extends string>({
         );
       })}
     </RadioGroup>
+  );
+}
+
+interface RadioCardFieldProps<T extends FieldValues, V extends string> {
+  control: Control<T>;
+  name: Path<T>;
+  options: RadioCardOption<V>[];
+  layout?: "column" | "grid";
+  /** Pergunta/título mostrado acima do grupo */
+  question?: string;
+}
+
+/**
+ * Versão integrada com react-hook-form: mostra <FormMessage /> automático
+ * em caso de erro de validação. Use sempre que estiver dentro de um <Form>.
+ */
+export function RadioCardField<T extends FieldValues, V extends string = string>({
+  control,
+  name,
+  options,
+  layout = "column",
+  question,
+}: RadioCardFieldProps<T, V>) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          {question && (
+            <p className="text-sm font-semibold text-gray-700 mb-2">{question}</p>
+          )}
+          <FormControl>
+            <RadioCardGroup<V>
+              value={field.value as V | undefined}
+              onChange={(v) => field.onChange(v)}
+              options={options}
+              layout={layout}
+              name={field.name}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 }

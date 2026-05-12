@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { FormSection } from "./FormSection";
 import { FormSuccess } from "./FormSuccess";
 import { FilterQuestion } from "./FilterQuestion";
-import { RadioCardGroup } from "./RadioCardGroup";
+import { RadioCardField } from "./RadioCardGroup";
+import { FormErrorBanner } from "./FormErrorBanner";
 import { TextField, TextareaField, SelectField, ESTADOS_BR } from "./Field";
 import { useLeadSubmit } from "@/hooks/useLeadSubmit";
+import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import { getPorta } from "@/lib/portas";
 
 const CAPITAL_OPTIONS = [
@@ -80,6 +82,7 @@ export function FranquiaForm() {
   });
 
   const { state, submit } = useLeadSubmit<FormValues>({ tipo: "franquia" });
+  const onInvalid = useScrollToFirstError<FormValues>();
 
   function handleCapitalChange(value: CapitalValue) {
     setCapital(value);
@@ -102,7 +105,7 @@ export function FranquiaForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 sm:space-y-8">
         <FilterQuestion
           eyebrow="Filtro de entrada"
           question="Qual capital você tem disponível para investir na operação completa (ponto, estoque, equipe, taxa de franquia)?"
@@ -122,18 +125,16 @@ export function FranquiaForm() {
             </FormSection>
 
             <FormSection number={2} title="Perfil empresarial">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Você já é empresário hoje?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("jaEmpresario")}
-                  onChange={(v) => form.setValue("jaEmpresario", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="jaEmpresario"
+                question="Você já é empresário hoje?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
               <TextField control={form.control} name="tempoEmpreendendo" label="Há quanto tempo empreende?" placeholder="Ex: 5 anos" />
               <TextareaField
                 control={form.control}
@@ -141,18 +142,16 @@ export function FranquiaForm() {
                 label="Que negócios você opera ou operou?"
                 placeholder="Conte rapidamente sobre seus negócios atuais e passados."
               />
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Tem experiência com varejo físico?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("experienciaVarejo")}
-                  onChange={(v) => form.setValue("experienciaVarejo", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="experienciaVarejo"
+                question="Tem experiência com varejo físico?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
               <TextField control={form.control} name="pessoasOperacao" label="Quantas pessoas trabalham na sua operação atual?" placeholder="Ex: 12" inputMode="numeric" />
             </FormSection>
 
@@ -162,73 +161,63 @@ export function FranquiaForm() {
                 <SelectField control={form.control} name="estado" label="Estado" placeholder="UF" options={ESTADOS_BR} />
               </div>
               <TextField control={form.control} name="bairroRegiao" label="Bairro ou região de interesse" placeholder="Pode listar mais de uma" optional />
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Tipo de ponto pretendido</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "rua", label: "Rua" },
-                    { value: "shopping", label: "Shopping" },
-                    { value: "outlet", label: "Outlet" },
-                    { value: "quiosque", label: "Quiosque" },
-                    { value: "indefinido", label: "Ainda definindo" },
-                  ]}
-                  value={form.watch("tipoPonto")}
-                  onChange={(v) => form.setValue("tipoPonto", v as FormValues["tipoPonto"], { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Você já tem ponto comercial em vista?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("jaTemPonto")}
-                  onChange={(v) => form.setValue("jaTemPonto", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Em quanto tempo pretende inaugurar?</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "90", label: "Até 90 dias" },
-                    { value: "180", label: "Entre 90 e 180 dias" },
-                    { value: "365", label: "Entre 180 e 365 dias" },
-                    { value: "indef", label: "Sem prazo definido" },
-                  ]}
-                  value={form.watch("prazoInauguracao")}
-                  onChange={(v) => form.setValue("prazoInauguracao", v as FormValues["prazoInauguracao"], { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="tipoPonto"
+                question="Tipo de ponto pretendido"
+                layout="grid"
+                options={[
+                  { value: "rua", label: "Rua" },
+                  { value: "shopping", label: "Shopping" },
+                  { value: "outlet", label: "Outlet" },
+                  { value: "quiosque", label: "Quiosque" },
+                  { value: "indefinido", label: "Ainda definindo" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="jaTemPonto"
+                question="Você já tem ponto comercial em vista?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="prazoInauguracao"
+                question="Em quanto tempo pretende inaugurar?"
+                options={[
+                  { value: "90", label: "Até 90 dias" },
+                  { value: "180", label: "Entre 90 e 180 dias" },
+                  { value: "365", label: "Entre 180 e 365 dias" },
+                  { value: "indef", label: "Sem prazo definido" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={4} title="Operação">
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Pretende operar pessoalmente ou contratar gerência?</p>
-                <RadioCardGroup
-                  options={[
-                    { value: "pessoal", label: "Pessoalmente, no dia-a-dia" },
-                    { value: "gerencia", label: "Vou contratar uma gerência" },
-                    { value: "ambos", label: "Misto: entro nas decisões, gerente toca a rotina" },
-                  ]}
-                  value={form.watch("modoOperacao")}
-                  onChange={(v) => form.setValue("modoOperacao", v as FormValues["modoOperacao"], { shouldValidate: true })}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Você tem capital de giro além do investimento inicial?</p>
-                <RadioCardGroup
-                  layout="grid"
-                  options={[
-                    { value: "sim", label: "Sim" },
-                    { value: "nao", label: "Não" },
-                  ]}
-                  value={form.watch("capitalGiro")}
-                  onChange={(v) => form.setValue("capitalGiro", v as "sim" | "nao", { shouldValidate: true })}
-                />
-              </div>
+              <RadioCardField
+                control={form.control}
+                name="modoOperacao"
+                question="Pretende operar pessoalmente ou contratar gerência?"
+                options={[
+                  { value: "pessoal", label: "Pessoalmente, no dia-a-dia" },
+                  { value: "gerencia", label: "Vou contratar uma gerência" },
+                  { value: "ambos", label: "Misto: entro nas decisões, gerente toca a rotina" },
+                ]}
+              />
+              <RadioCardField
+                control={form.control}
+                name="capitalGiro"
+                question="Você tem capital de giro além do investimento inicial?"
+                layout="grid"
+                options={[
+                  { value: "sim", label: "Sim" },
+                  { value: "nao", label: "Não" },
+                ]}
+              />
             </FormSection>
 
             <FormSection number={5} title="Alinhamento com a marca">
@@ -254,11 +243,7 @@ export function FranquiaForm() {
               />
             </FormSection>
 
-            {state.error && (
-              <p className="text-sm font-medium text-destructive" role="alert">
-                {state.error}
-              </p>
-            )}
+            <FormErrorBanner errors={form.formState.errors} submitError={state.error} />
 
             <div className="pt-2 flex justify-center">
               <Button
