@@ -32,41 +32,35 @@ const CAPITAL_OPTIONS = [
 
 type CapitalValue = (typeof CAPITAL_OPTIONS)[number]["value"];
 
+// Apenas o e-mail é obrigatório. Os demais campos seguem opcionais
+// pra não bloquear envio — o time decide depois o que cobrar no follow-up.
 const schema = z.object({
-  capital: z.enum(["500k+", "250-500k", "100-250k", "<100k"], {
-    errorMap: () => ({ message: "Selecione uma faixa de capital" }),
-  }),
-  nomeCompleto: z.string().min(1, "Campo obrigatório"),
-  email: z.string().email("E-mail inválido"),
-  whatsapp: z.string().min(8, "WhatsApp obrigatório"),
-  cpf: z.string().min(1, "CPF obrigatório"),
+  capital: z.enum(["500k+", "250-500k", "100-250k", "<100k"]).optional(),
+  nomeCompleto: z.string().optional(),
+  email: z.string().min(1, "E-mail obrigatório").email("E-mail inválido"),
+  whatsapp: z.string().optional(),
+  cpf: z.string().optional(),
   cnpj: z.string().optional(),
 
-  jaEmpresario: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  tempoEmpreendendo: z.string().min(1, "Campo obrigatório"),
-  negociosOperados: z.string().min(1, "Conte sobre seus negócios"),
-  experienciaVarejo: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  pessoasOperacao: z.string().min(1, "Campo obrigatório"),
+  jaEmpresario: z.enum(["sim", "nao"]).optional(),
+  tempoEmpreendendo: z.string().optional(),
+  negociosOperados: z.string().optional(),
+  experienciaVarejo: z.enum(["sim", "nao"]).optional(),
+  pessoasOperacao: z.string().optional(),
 
-  cidade: z.string().min(1, "Campo obrigatório"),
-  estado: z.string().min(1, "Selecione um estado"),
+  cidade: z.string().optional(),
+  estado: z.string().optional(),
   bairroRegiao: z.string().optional(),
-  tipoPonto: z.enum(["rua", "shopping", "outlet", "quiosque", "indefinido"], {
-    errorMap: () => ({ message: "Selecione um tipo de ponto" }),
-  }),
-  jaTemPonto: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  prazoInauguracao: z.enum(["90", "180", "365", "indef"], {
-    errorMap: () => ({ message: "Selecione um prazo" }),
-  }),
+  tipoPonto: z.enum(["rua", "shopping", "outlet", "quiosque", "indefinido"]).optional(),
+  jaTemPonto: z.enum(["sim", "nao"]).optional(),
+  prazoInauguracao: z.enum(["90", "180", "365", "indef"]).optional(),
 
-  modoOperacao: z.enum(["pessoal", "gerencia", "ambos"], {
-    errorMap: () => ({ message: "Selecione uma opção" }),
-  }),
-  capitalGiro: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  modoOperacao: z.enum(["pessoal", "gerencia", "ambos"]).optional(),
+  capitalGiro: z.enum(["sim", "nao"]).optional(),
 
-  motivacao: z.string().min(200, "Mínimo de 200 caracteres"),
-  tempoAcompanha: z.string().min(1, "Campo obrigatório"),
-  comoConheceu: z.string().min(1, "Campo obrigatório"),
+  motivacao: z.string().optional(),
+  tempoAcompanha: z.string().optional(),
+  comoConheceu: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;

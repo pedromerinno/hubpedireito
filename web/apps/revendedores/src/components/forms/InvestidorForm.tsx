@@ -28,31 +28,30 @@ const TICKET_OPTIONS = [
 
 type TicketValue = (typeof TICKET_OPTIONS)[number]["value"];
 
+// Apenas o e-mail é obrigatório.
 const schema = z.object({
-  ticket: z.enum(["1mm+", "500k-1mm", "100-500k", "<100k"]),
-  nomeCompleto: z.string().min(1, "Campo obrigatório"),
-  email: z.string().email("E-mail inválido"),
-  whatsapp: z.string().min(8, "WhatsApp obrigatório"),
-  pfPj: z.enum(["pf", "pj"], { errorMap: () => ({ message: "Selecione PF ou PJ" }) }),
-  cidadePais: z.string().min(1, "Campo obrigatório"),
+  ticket: z.enum(["1mm+", "500k-1mm", "100-500k", "<100k"]).optional(),
+  nomeCompleto: z.string().optional(),
+  email: z.string().min(1, "E-mail obrigatório").email("E-mail inválido"),
+  whatsapp: z.string().optional(),
+  pfPj: z.enum(["pf", "pj"]).optional(),
+  cidadePais: z.string().optional(),
 
-  qualificado: z.enum(["1mm+", "300-1mm", "<300"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  jaInvestiu: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  numeroOperacoes: z.string().min(1, "Campo obrigatório"),
+  qualificado: z.enum(["1mm+", "300-1mm", "<300"]).optional(),
+  jaInvestiu: z.enum(["sim", "nao"]).optional(),
+  numeroOperacoes: z.string().optional(),
   empresasInvestidas: z.string().optional(),
 
-  ticketPretendido: z.enum(["1mm+", "500k-1mm", "100-500k", "<100k"]),
-  instrumento: z.enum(["equity", "divida", "mutuo", "safe", "aberto"], {
-    errorMap: () => ({ message: "Selecione um instrumento" }),
-  }),
-  horizonte: z.enum(["3", "5", "10", "longo"], { errorMap: () => ({ message: "Selecione um horizonte" }) }),
-  atuacaoAtiva: z.enum(["ativa", "capital"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  ticketPretendido: z.enum(["1mm+", "500k-1mm", "100-500k", "<100k"]).optional(),
+  instrumento: z.enum(["equity", "divida", "mutuo", "safe", "aberto"]).optional(),
+  horizonte: z.enum(["3", "5", "10", "longo"]).optional(),
+  atuacaoAtiva: z.enum(["ativa", "capital"]).optional(),
 
-  motivacao: z.string().min(200, "Mínimo de 200 caracteres"),
-  comoConheceu: z.string().min(1, "Campo obrigatório"),
-  acompanhaFundador: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  motivacao: z.string().optional(),
+  comoConheceu: z.string().optional(),
+  acompanhaFundador: z.enum(["sim", "nao"]).optional(),
 
-  callDisponivel: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  callDisponivel: z.enum(["sim", "nao"]).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;

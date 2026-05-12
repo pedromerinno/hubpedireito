@@ -10,7 +10,7 @@ import { FilterQuestion } from "./FilterQuestion";
 import { RadioCardField } from "./RadioCardGroup";
 import { FormErrorBanner } from "./FormErrorBanner";
 import { TextField, TextareaField, SelectField, ESTADOS_BR } from "./Field";
-import { getOrigem } from "@/lib/origem";
+import { useLeadSubmit } from "@/hooks/useLeadSubmit";
 import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import { getPorta } from "@/lib/portas";
 
@@ -25,31 +25,28 @@ const CANAL_OPTIONS = [
 
 type CanalValue = (typeof CANAL_OPTIONS)[number]["value"];
 
+// Apenas o e-mail é obrigatório.
 const schema = z.object({
-  canalVenda: z.enum(["fisica", "online", "redes", "eventos", "porta", "indef"]),
+  canalVenda: z.enum(["fisica", "online", "redes", "eventos", "porta", "indef"]).optional(),
 
-  nomeCompleto: z.string().min(1, "Campo obrigatório"),
-  email: z.string().email("E-mail inválido"),
-  whatsapp: z.string().min(8, "WhatsApp obrigatório"),
-  cidade: z.string().min(1, "Campo obrigatório"),
-  estado: z.string().min(1, "Selecione um estado"),
-  cnpjStatus: z.enum(["sim", "nao", "mei"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  nomeCompleto: z.string().optional(),
+  email: z.string().min(1, "E-mail obrigatório").email("E-mail inválido"),
+  whatsapp: z.string().optional(),
+  cidade: z.string().optional(),
+  estado: z.string().optional(),
+  cnpjStatus: z.enum(["sim", "nao", "mei"]).optional(),
 
-  jaVende: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  jaVende: z.enum(["sim", "nao"]).optional(),
   oQueVende: z.string().optional(),
   tempoVendendo: z.string().optional(),
   clientelaAtiva: z.string().optional(),
 
-  volumeMensal: z.enum(["20", "50", "100", "300", "300+"], {
-    errorMap: () => ({ message: "Selecione um volume" }),
-  }),
-  espacoEstoque: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  exclusividade: z.enum(["exclusivo", "junto"], {
-    errorMap: () => ({ message: "Selecione uma opção" }),
-  }),
+  volumeMensal: z.enum(["20", "50", "100", "300", "300+"]).optional(),
+  espacoEstoque: z.enum(["sim", "nao"]).optional(),
+  exclusividade: z.enum(["exclusivo", "junto"]).optional(),
 
-  motivacao: z.string().min(100, "Mínimo de 100 caracteres"),
-  comoConheceu: z.string().min(1, "Campo obrigatório"),
+  motivacao: z.string().optional(),
+  comoConheceu: z.string().optional(),
   redeOuComunidade: z.string().optional(),
 });
 
@@ -58,15 +55,13 @@ type FormValues = z.infer<typeof schema>;
 export function RevendedorForm() {
   const porta = getPorta("revendedor");
   const [canal, setCanal] = useState<CanalValue | undefined>(undefined);
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {} as FormValues,
   });
   const onInvalid = useScrollToFirstError<FormValues>();
+  const { state, submit } = useLeadSubmit<FormValues>({ tipo: "revendedor" });
 
   function handleCanalChange(value: CanalValue) {
     setCanal(value);
@@ -74,65 +69,10 @@ export function RevendedorForm() {
   }
 
   async function onSubmit(values: FormValues) {
-    setError(null);
-    setSubmitting(true);
-    try {
-      const origem = getOrigem();
-      const payload = {
-        nomeCompleto: values.nomeCompleto,
-        empresaLoja: "",
-        cnpj: values.cnpjStatus === "nao" ? "" : values.cnpjStatus,
-        cidadeEstado: `${values.cidade}, ${values.estado}`,
-        telefoneWhatsapp: values.whatsapp,
-        email: values.email,
-        site: values.redeOuComunidade || "",
-        instagramRedes: values.redeOuComunidade || "",
-        tempoMercado: values.tempoVendendo || "",
-        entendeProposito: undefined as undefined,
-        vendeCalcadosVestuario: values.jaVende,
-        formaVenda:
-          values.canalVenda === "fisica"
-            ? "fisica"
-            : values.canalVenda === "online"
-              ? "online"
-              : values.canalVenda === "redes"
-                ? "marketplace"
-                : values.canalVenda === "porta"
-                  ? "porta"
-                  : "mistos",
-        oQueChamouAtencao: values.motivacao,
-        seguePadroesMarca: "sim",
-        paresPorMes: values.volumeMensal,
-        // metadados úteis
-        canalVenda: values.canalVenda,
-        cnpjStatus: values.cnpjStatus,
-        oQueVende: values.oQueVende,
-        clientelaAtiva: values.clientelaAtiva,
-        espacoEstoque: values.espacoEstoque,
-        exclusividade: values.exclusividade,
-        comoConheceu: values.comoConheceu,
-        origem,
-      };
-
-      const res = await fetch("/api/submit-revendedor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const json = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) {
-        setError(json.error || "Falha ao enviar. Tente novamente.");
-        return;
-      }
-      setSubmitted(true);
-    } catch {
-      setError("Erro de conexão. Tente novamente.");
-    } finally {
-      setSubmitting(false);
-    }
+    await submit(values);
   }
 
-  if (submitted) {
+  if (state.status === "submitted") {
     return (
       <FormSuccess
         porta={porta}
@@ -256,15 +196,15 @@ export function RevendedorForm() {
               />
             </FormSection>
 
-            <FormErrorBanner errors={form.formState.errors} submitError={error} />
+            <FormErrorBanner errors={form.formState.errors} submitError={state.error} />
 
             <div className="pt-2 flex justify-center">
               <Button
                 type="submit"
-                disabled={submitting}
+                disabled={state.status === "submitting"}
                 className="rounded-full px-10 py-6 bg-[#2B9402] hover:bg-[#2B9402]/90 text-[#FEBF00] font-semibold disabled:opacity-70"
               >
-                {submitting ? "Enviando..." : "Quero ser revendedor"}
+                {state.status === "submitting" ? "Enviando..." : "Quero ser revendedor"}
               </Button>
             </div>
           </>

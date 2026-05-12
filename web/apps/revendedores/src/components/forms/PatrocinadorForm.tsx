@@ -23,34 +23,33 @@ const ORCAMENTO_OPTIONS = [
 
 type OrcamentoValue = (typeof ORCAMENTO_OPTIONS)[number]["value"];
 
+// Apenas o e-mail (do contato) é obrigatório.
 const schema = z.object({
-  orcamento: z.enum(["500k+", "100-500k", "30-100k", "<30k"]),
+  orcamento: z.enum(["500k+", "100-500k", "30-100k", "<30k"]).optional(),
 
-  razaoSocial: z.string().min(1, "Campo obrigatório"),
-  cnpj: z.string().min(1, "CNPJ obrigatório"),
-  setor: z.string().min(1, "Campo obrigatório"),
-  tamanho: z.string().min(1, "Campo obrigatório"),
-  site: z.string().min(1, "Campo obrigatório"),
-  cidadeSede: z.string().min(1, "Campo obrigatório"),
+  razaoSocial: z.string().optional(),
+  cnpj: z.string().optional(),
+  setor: z.string().optional(),
+  tamanho: z.string().optional(),
+  site: z.string().optional(),
+  cidadeSede: z.string().optional(),
 
-  contatoNome: z.string().min(1, "Campo obrigatório"),
-  contatoCargo: z.string().min(1, "Campo obrigatório"),
-  contatoEmail: z.string().email("E-mail inválido"),
-  contatoWhatsapp: z.string().min(8, "WhatsApp obrigatório"),
+  contatoNome: z.string().optional(),
+  contatoCargo: z.string().optional(),
+  contatoEmail: z.string().min(1, "E-mail obrigatório").email("E-mail inválido"),
+  contatoWhatsapp: z.string().optional(),
 
-  oQuePatrocinar: z.string().min(1, "Campo obrigatório"),
-  tipoAtivacao: z.string().min(1, "Campo obrigatório"),
-  orcamentoAnual: z.enum(["500k+", "100-500k", "30-100k", "<30k"]),
-  duracao: z.enum(["pontual", "6m", "12m", "multianual"], {
-    errorMap: () => ({ message: "Selecione uma duração" }),
-  }),
+  oQuePatrocinar: z.string().optional(),
+  tipoAtivacao: z.string().optional(),
+  orcamentoAnual: z.enum(["500k+", "100-500k", "30-100k", "<30k"]).optional(),
+  duracao: z.enum(["pontual", "6m", "12m", "multianual"]).optional(),
 
-  sinergia: z.string().min(200, "Mínimo de 200 caracteres"),
-  porQuePD: z.string().min(1, "Campo obrigatório"),
-  patrocinosAnteriores: z.string().min(1, "Cite ao menos um exemplo"),
+  sinergia: z.string().optional(),
+  porQuePD: z.string().optional(),
+  patrocinosAnteriores: z.string().optional(),
   exclusividadeSetorial: z.string().optional(),
 
-  apresentacao: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  apresentacao: z.enum(["sim", "nao"]).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;

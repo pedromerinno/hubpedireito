@@ -32,31 +32,32 @@ const ATUACAO_OPTIONS = [
 
 type AtuacaoValue = (typeof ATUACAO_OPTIONS)[number]["value"];
 
+// Apenas o e-mail é obrigatório.
 const schema = z.object({
-  atuacao: z.enum(["cnpj", "informal", "parado", "nunca"]),
-  nomeCompleto: z.string().min(1, "Campo obrigatório"),
-  email: z.string().email("E-mail inválido"),
-  whatsapp: z.string().min(8, "WhatsApp obrigatório"),
-  cnpj: z.string().min(1, "CNPJ obrigatório"),
-  cidadeSede: z.string().min(1, "Campo obrigatório"),
+  atuacao: z.enum(["cnpj", "informal", "parado", "nunca"]).optional(),
+  nomeCompleto: z.string().optional(),
+  email: z.string().min(1, "E-mail obrigatório").email("E-mail inválido"),
+  whatsapp: z.string().optional(),
+  cnpj: z.string().optional(),
+  cidadeSede: z.string().optional(),
 
-  tempoAtuacao: z.string().min(1, "Campo obrigatório"),
-  marcasRepresentadas: z.string().min(1, "Liste suas marcas principais"),
-  setores: z.string().min(1, "Selecione ao menos um setor"),
-  regioesAtuacao: z.string().min(1, "Liste estados ou regiões"),
-  lojasAtivas: z.string().min(1, "Campo obrigatório"),
+  tempoAtuacao: z.string().optional(),
+  marcasRepresentadas: z.string().optional(),
+  setores: z.string().optional(),
+  regioesAtuacao: z.string().optional(),
+  lojasAtivas: z.string().optional(),
   comissaoMensal: z.string().optional(),
 
-  estrutura: z.enum(["solo", "equipe"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  temShowroom: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  sistemaPedidos: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  estrutura: z.enum(["solo", "equipe"]).optional(),
+  temShowroom: z.enum(["sim", "nao"]).optional(),
+  sistemaPedidos: z.enum(["sim", "nao"]).optional(),
 
-  motivacao: z.string().min(200, "Mínimo de 200 caracteres"),
-  redesAtivacao: z.string().min(1, "Campo obrigatório"),
-  representaConcorrente: z.enum(["sim", "nao"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
-  exclusividade: z.enum(["sim", "nao", "negociar"], { errorMap: () => ({ message: "Selecione uma opção" }) }),
+  motivacao: z.string().optional(),
+  redesAtivacao: z.string().optional(),
+  representaConcorrente: z.enum(["sim", "nao"]).optional(),
+  exclusividade: z.enum(["sim", "nao", "negociar"]).optional(),
 
-  referencias: z.string().min(1, "Cite ao menos 2 referências"),
+  referencias: z.string().optional(),
   algoMais: z.string().optional(),
 });
 
