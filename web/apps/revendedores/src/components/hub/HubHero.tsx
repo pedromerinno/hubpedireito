@@ -46,7 +46,7 @@ export function HubHero({ onSeePortas }: HubHeroProps) {
           }}
         />
 
-        <p className="mt-16 sm:mt-24 text-xs sm:text-sm font-semibold tracking-[0.28em] uppercase text-[#F9F1D1]/90">
+        <p className="mt-16 sm:mt-24 text-xs sm:text-sm font-semibold tracking-[0.14em] uppercase text-[#F9F1D1]/90">
           Período Fundador
         </p>
 
