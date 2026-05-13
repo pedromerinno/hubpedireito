@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import pedireitoLogo from "@/assets/pedireito-logo.svg";
+import { supabase, isSupabaseConfigured } from "@pedireito/db/client";
 
 const ESTADOS_BR = [
   { value: "AC", label: "Acre" },
@@ -123,20 +124,43 @@ export function RevendedoresForm() {
     setSubmitError(null);
     setIsSubmitting(true);
     try {
+      if (!isSupabaseConfigured || !supabase) {
+        setSubmitError("Configuração ausente. Tente novamente em instantes.");
+        return;
+      }
+
       const { cidade, estado, ...rest } = data;
-      const payload = { ...rest, cidadeEstado: `${cidade}, ${estado}` };
-      const res = await fetch("/api/submit-revendedor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      const dados = { ...rest, cidadeEstado: `${cidade}, ${estado}` };
+
+      const params = new URLSearchParams(window.location.search);
+      const origem = {
+        utmSource: params.get("utm_source") ?? undefined,
+        utmMedium: params.get("utm_medium") ?? undefined,
+        utmCampaign: params.get("utm_campaign") ?? undefined,
+        utmContent: params.get("utm_content") ?? undefined,
+        utmTerm: params.get("utm_term") ?? undefined,
+        referrer: document.referrer || undefined,
+        landingPath: window.location.pathname || undefined,
+      };
+
+      const { error } = await supabase.from("leads").insert({
+        tipo: "revendedor",
+        nome_completo: dados.nomeCompleto.trim() || null,
+        email: dados.email.trim() || null,
+        telefone_whatsapp: dados.telefoneWhatsapp.trim() || null,
+        dados,
+        origem,
+        submitted_at: new Date().toISOString(),
       });
-      const json = (await res.json().catch(() => ({}))) as { error?: string; details?: string };
-      if (!res.ok) {
-        setSubmitError(json.error || "Falha ao enviar. Tente novamente.");
+
+      if (error) {
+        console.error("[RevendedoresForm] Supabase insert error:", error);
+        setSubmitError("Falha ao enviar. Tente novamente em instantes.");
         return;
       }
       setSubmitted(true);
-    } catch {
+    } catch (err) {
+      console.error("[RevendedoresForm] Exception:", err);
       setSubmitError("Erro de conexão. Tente novamente.");
     } finally {
       setIsSubmitting(false);
