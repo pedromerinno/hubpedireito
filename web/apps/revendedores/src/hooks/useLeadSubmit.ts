@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase, isSupabaseConfigured } from "@pedireito/db/client";
 import { getOrigem } from "@/lib/origem";
 import type { PortaId } from "@/lib/portas";
 
@@ -16,67 +17,83 @@ export interface UseLeadSubmitResult<TData> {
 }
 
 interface UseLeadSubmitOptions {
-  /** Endpoint pra POST. Default: /api/submit-lead */
-  endpoint?: string;
-  /** Tipo da porta. Vai junto no payload pra segmentar no backend. */
+  /** Tipo da porta. Vai junto no payload pra segmentar. */
   tipo: PortaId;
 }
 
+/** Heurística pra extrair os campos-chave (nome, email, whatsapp) de um payload genérico. */
+function extractContact(dados: Record<string, unknown>) {
+  const get = (key: string) => {
+    const v = dados[key];
+    return typeof v === "string" ? v.trim() : "";
+  };
+
+  return {
+    nome:
+      get("nomeCompleto") ||
+      get("contatoNome") ||
+      get("razaoSocial") ||
+      "",
+    email:
+      get("email") ||
+      get("contatoEmail") ||
+      "",
+    whatsapp:
+      get("whatsapp") ||
+      get("telefoneWhatsapp") ||
+      get("contatoWhatsapp") ||
+      "",
+  };
+}
+
 /**
- * Hook genérico de submissão de lead. Anexa metadados de origem (UTM, referrer)
- * automaticamente e centraliza estado de loading/erro.
+ * Submissão de lead direto pro Supabase via anon key.
  *
- * Fallback de dev: o handler `/api/submit-lead` é uma function Vercel/CF Pages e
- * não roda no Vite dev server (404). Em modo DEV, tratamos 404 como sucesso
- * simulado, logando o payload no console — assim a UX dos forms é testável
- * localmente sem subir backend. Em produção isso nunca acontece.
+ * - Funciona em dev e prod sem precisar de function (Vercel/CF Pages).
+ * - RLS garante que anon só consegue INSERT (não consegue listar leads alheios).
+ * - O e-mail é a chave de contato; nome/whatsapp são opcionais e serão coletados
+ *   no follow-up manual.
  */
 export function useLeadSubmit<TData extends object>({
-  endpoint = "/api/submit-lead",
   tipo,
 }: UseLeadSubmitOptions): UseLeadSubmitResult<TData> {
   const [state, setState] = useState<LeadSubmitState>({ status: "idle", error: null });
 
   async function submit(data: TData): Promise<boolean> {
     setState({ status: "submitting", error: null });
+
+    if (!isSupabaseConfigured || !supabase) {
+      console.error(
+        "[useLeadSubmit] Supabase não configurado. " +
+        "Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env.",
+      );
+      setState({
+        status: "error",
+        error: "Configuração ausente. Tente novamente em instantes.",
+      });
+      return false;
+    }
+
+    const dados = data as unknown as Record<string, unknown>;
+    const contact = extractContact(dados);
     const origem = getOrigem();
-    const payload = {
-      tipo,
-      dados: data,
-      origem,
-      submittedAt: new Date().toISOString(),
-    };
 
     try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      const { error } = await supabase.from("leads").insert({
+        tipo,
+        nome_completo: contact.nome || null,
+        email: contact.email || null,
+        telefone_whatsapp: contact.whatsapp || null,
+        dados,
+        origem,
+        submitted_at: new Date().toISOString(),
       });
 
-      // Aceitamos sucesso mesmo sem JSON estruturado, desde que 2xx
-      let body: { error?: string } | null = null;
-      try {
-        body = (await res.json()) as { error?: string };
-      } catch {
-        body = null;
-      }
-
-      if (res.status === 404 && import.meta.env.DEV) {
-        console.warn(
-          `[useLeadSubmit] ${endpoint} retornou 404 em dev. ` +
-          `Tratando como sucesso simulado (Vite dev server não executa functions Vercel/CF Pages).`,
-        );
-        console.info(`[useLeadSubmit] Payload enviado:`, payload);
-        await new Promise((r) => setTimeout(r, 350));
-        setState({ status: "submitted", error: null });
-        return true;
-      }
-
-      if (!res.ok) {
+      if (error) {
+        console.error("[useLeadSubmit] Supabase insert error:", error);
         setState({
           status: "error",
-          error: body?.error || "Falha ao enviar. Tente novamente.",
+          error: friendlyMessage(error.message),
         });
         return false;
       }
@@ -84,15 +101,7 @@ export function useLeadSubmit<TData extends object>({
       setState({ status: "submitted", error: null });
       return true;
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.warn(
-          `[useLeadSubmit] Falha de rede em dev. Tratando como sucesso simulado.`,
-          err,
-        );
-        console.info(`[useLeadSubmit] Payload enviado:`, payload);
-        setState({ status: "submitted", error: null });
-        return true;
-      }
+      console.error("[useLeadSubmit] Exception:", err);
       setState({
         status: "error",
         error: "Erro de conexão. Tente novamente.",
@@ -106,4 +115,18 @@ export function useLeadSubmit<TData extends object>({
   }
 
   return { state, submit, reset };
+}
+
+/** Converte erros técnicos do Postgres em mensagens humanas. */
+function friendlyMessage(raw: string): string {
+  if (/leads_has_contact_check/i.test(raw)) {
+    return "Informe ao menos um e-mail ou WhatsApp.";
+  }
+  if (/duplicate key|already exists/i.test(raw)) {
+    return "Esse lead já foi recebido. Obrigado!";
+  }
+  if (/permission denied|RLS|row-level security/i.test(raw)) {
+    return "Bloqueio de permissão. Avise o time.";
+  }
+  return "Falha ao enviar. Tente novamente em instantes.";
 }
