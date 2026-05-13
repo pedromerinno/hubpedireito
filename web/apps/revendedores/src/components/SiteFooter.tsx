@@ -97,6 +97,11 @@ export function SiteFooter({
                   Patrocinador
                 </Link>
               </li>
+              <li>
+                <Link to="/casamento" className={linkCls}>
+                  Casamento
+                </Link>
+              </li>
             </ul>
           </nav>
 

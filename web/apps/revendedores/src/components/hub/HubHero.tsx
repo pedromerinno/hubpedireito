@@ -66,7 +66,7 @@ export function HubHero({ onSeePortas }: HubHeroProps) {
           onClick={onSeePortas}
           className="mt-14 sm:mt-20 group rounded-full bg-[#FEBF00] hover:bg-[#FEBF00]/90 text-[#2B9402] px-8 sm:px-10 py-6 sm:py-7 text-base sm:text-lg font-semibold gap-3 transition-all"
         >
-          Veja as 5 portas
+          Veja as 6 portas
           <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
         </Button>
       </div>

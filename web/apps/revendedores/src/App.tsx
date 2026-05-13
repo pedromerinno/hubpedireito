@@ -9,6 +9,7 @@ import Franquia from "./pages/Franquia";
 import Representante from "./pages/Representante";
 import Investidor from "./pages/Investidor";
 import Patrocinador from "./pages/Patrocinador";
+import Casamento from "./pages/Casamento";
 import FaqSuporte from "./pages/FaqSuporte";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/representante" element={<Representante />} />
           <Route path="/investidor" element={<Investidor />} />
           <Route path="/patrocinador" element={<Patrocinador />} />
+          <Route path="/casamento" element={<Casamento />} />
           <Route path="/faq" element={<FaqSuporte />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

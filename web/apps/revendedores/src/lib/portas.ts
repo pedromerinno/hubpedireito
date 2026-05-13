@@ -1,12 +1,13 @@
 import type { LucideIcon } from "lucide-react";
-import { Store, Briefcase, ShoppingBag, Coins, Handshake } from "lucide-react";
+import { Store, Briefcase, ShoppingBag, Coins, Handshake, Heart } from "lucide-react";
 
 export type PortaId =
   | "franquia"
   | "representante"
   | "revendedor"
   | "investidor"
-  | "patrocinador";
+  | "patrocinador"
+  | "casamento";
 
 export interface PortaTheme {
   /** bg do card (paleta da marca) */
@@ -128,6 +129,25 @@ export const PORTAS: Porta[] = [
       accent: "#FEBF00",
       iconBg: "#2B9402",
       iconFg: "#FFFFFF",
+    },
+  },
+  {
+    id: "casamento",
+    nome: "casamento",
+    definicao: "Você leva Pé Direito pro seu grande dia.",
+    paraQuem: "Noivos, cerimonialistas e produtores de eventos.",
+    rota: "/casamento",
+    icone: Heart,
+    cta: "Quero entrar por aqui",
+    videoUrl: "/videos/arara-tropical.mp4",
+    // bg verde + fg bege, combo inédito no grid (representante é verde+amarelo).
+    // vibe celebração/grande dia: cor da marca + creme de festa.
+    tema: {
+      bg: "#2B9402",
+      fg: "#F9F1D1",
+      accent: "#FEBF00",
+      iconBg: "#FEBF00",
+      iconFg: "#2B9402",
     },
   },
 ];

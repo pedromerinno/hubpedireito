@@ -42,6 +42,10 @@ const QUESTIONS: QuizQuestion[] = [
         label: "Conectar minha marca ao movimento",
         scores: { patrocinador: 3 },
       },
+      {
+        label: "Levar pro meu casamento ou evento",
+        scores: { casamento: 3 },
+      },
     ],
   },
   {
@@ -58,11 +62,11 @@ const QUESTIONS: QuizQuestion[] = [
       },
       {
         label: "Entre R$ 10 mil e R$ 100 mil",
-        scores: { representante: 1, revendedor: 1, patrocinador: 1 },
+        scores: { representante: 1, revendedor: 1, patrocinador: 1, casamento: 1 },
       },
       {
         label: "Abaixo de R$ 10 mil",
-        scores: { revendedor: 2 },
+        scores: { revendedor: 2, casamento: 1 },
       },
     ],
   },
@@ -83,12 +87,16 @@ const QUESTIONS: QuizQuestion[] = [
         scores: { revendedor: 3 },
       },
       {
-        label: "Sou investidor / executivo de capital",
+        label: "Sou investidor ou executivo de capital",
         scores: { investidor: 3 },
       },
       {
-        label: "Represento uma empresa / marca",
+        label: "Represento uma empresa ou marca",
         scores: { patrocinador: 3 },
+      },
+      {
+        label: "Sou noivo, cerimonialista ou organizo eventos",
+        scores: { casamento: 3 },
       },
     ],
   },
@@ -103,6 +111,7 @@ function pickWinner(answers: Answers): PortaId {
     revendedor: 0,
     investidor: 0,
     patrocinador: 0,
+    casamento: 0,
   };
 
   QUESTIONS.forEach((q) => {
@@ -178,7 +187,7 @@ export function QuizPortas() {
         {!done && question ? (
           <div className="rounded-2xl bg-[#F9F1D1] p-6 sm:p-8 md:p-10">
             <div className="flex items-center justify-between mb-6">
-              <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#005CE1]/70">
+              <p className="text-xs font-semibold uppercase text-[#005CE1]/70">
                 Pergunta {step + 1} de {QUESTIONS.length}
               </p>
               <div className="flex gap-1.5">

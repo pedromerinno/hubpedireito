@@ -6,7 +6,8 @@ export type LeadTipo =
   | "representante"
   | "revendedor"
   | "investidor"
-  | "patrocinador";
+  | "patrocinador"
+  | "casamento";
 
 export interface LeadOrigem {
   utmSource?: string;
@@ -35,6 +36,7 @@ const VALID_TIPOS: LeadTipo[] = [
   "revendedor",
   "investidor",
   "patrocinador",
+  "casamento",
 ];
 
 /** Heurística pra extrair os campos-chave (nome, email, whatsapp) do payload genérico. */

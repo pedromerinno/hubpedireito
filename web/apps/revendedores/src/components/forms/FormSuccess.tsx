@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import type { Porta } from "@/lib/portas";
-import { Button } from "@/components/ui/button";
 
 interface FormSuccessProps {
   porta: Porta;
@@ -13,39 +12,36 @@ interface FormSuccessProps {
 
 export function FormSuccess({ porta, proximoPasso, prazoContato }: FormSuccessProps) {
   return (
-    <div className="rounded-2xl bg-white border border-[#2B9402]/15 p-8 sm:p-10 md:p-12 text-center shadow-sm">
-      <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#2B9402]/10 text-[#2B9402] mb-6">
-        <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={2} />
+    <div className="rounded-3xl bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(43,148,2,0.12)] ring-1 ring-black/[0.04] px-6 sm:px-10 py-12 sm:py-16 text-center">
+      <div className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#2B9402]/30 text-[#2B9402] mb-8">
+        <Check className="w-4 h-4" strokeWidth={2.5} aria-hidden="true" />
       </div>
 
-      <p className="text-xs font-semibold tracking-[0.28em] uppercase text-[#2B9402]/70">
+      <p className="text-[11px] font-semibold uppercase text-[#2B9402]/60">
         Cadastro recebido · Porta {porta.nome}
       </p>
-      <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-extrabold leading-[0.95] tracking-tight text-[#2B9402] lowercase">
+
+      <h2 className="mt-5 text-3xl sm:text-4xl md:text-5xl font-extrabold leading-[0.95] tracking-tight text-[#2B9402] uppercase">
         obrigado por
         <br />
         caminhar com a gente.
       </h2>
 
-      <p className="mt-6 text-base sm:text-lg text-foreground/85 leading-relaxed max-w-md mx-auto">
+      <p className="mt-6 text-base sm:text-[17px] text-foreground/75 leading-relaxed max-w-[440px] mx-auto">
         {proximoPasso}
       </p>
 
       {prazoContato && (
-        <p className="mt-3 text-sm text-muted-foreground">{prazoContato}</p>
+        <p className="mt-2 text-sm text-muted-foreground/80">{prazoContato}</p>
       )}
 
-      <div className="mt-10">
-        <Button
-          asChild
-          className="rounded-full bg-[#2B9402] hover:bg-[#2B9402]/90 text-[#FEBF00] px-7 py-6 text-sm font-semibold gap-2"
-        >
-          <Link to="/">
-            <ArrowLeft className="h-4 w-4" />
-            Voltar ao hub
-          </Link>
-        </Button>
-      </div>
+      <Link
+        to="/"
+        className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-[#2B9402] transition-colors hover:text-[#2B9402]/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2B9402]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-sm group"
+      >
+        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
+        Voltar ao hub
+      </Link>
     </div>
   );
 }
