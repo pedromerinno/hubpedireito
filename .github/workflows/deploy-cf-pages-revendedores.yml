@@ -1,0 +1,74 @@
+name: Deploy revendedores → Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - deploy/cf-pages-revendedores
+    paths:
+      - "web/apps/revendedores/**"
+      - "web/packages/**"
+      - "web/package.json"
+      - "web/turbo.json"
+      - ".github/workflows/deploy-cf-pages-revendedores.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: cf-pages-revendedores
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install deps
+        working-directory: web
+        # Troca pra `npm ci` quando o repo passar a commitar package-lock.json.
+        run: npm install --no-audit --no-fund
+
+      - name: Lint (informativo, não bloqueia deploy)
+        working-directory: web
+        continue-on-error: true
+        run: npx turbo run lint --filter=@pedireito/revendedores
+
+      - name: Typecheck
+        working-directory: web
+        run: npx turbo run typecheck --filter=@pedireito/revendedores
+
+      - name: Test
+        working-directory: web
+        run: npx turbo run test --filter=@pedireito/revendedores
+
+      - name: Build
+        working-directory: web
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npx turbo run build --filter=@pedireito/revendedores
+
+      - name: Verify dist artifacts
+        run: |
+          test -f web/apps/revendedores/dist/index.html
+          test -f web/apps/revendedores/dist/_headers
+          test -f web/apps/revendedores/dist/_redirects
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy web/apps/revendedores/dist --project-name=revendedores --branch=production
